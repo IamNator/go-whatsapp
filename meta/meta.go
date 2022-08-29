@@ -92,6 +92,7 @@ const (
 	ComponentTypeHeader ComponentType = "header"
 	ComponentTypeBody   ComponentType = "body"
 	ComponentTypeButton ComponentType = "button"
+	ComponentTypeFooter ComponentType = "footer"
 
 	ParameterTypeText  ParameterType = "text"
 	ParameterTypeImage ParameterType = "image" //not sure
@@ -144,6 +145,10 @@ func (m *metaPayload) AddBody(text string) *metaPayload {
 
 func (m *metaPayload) AddButton(text string) *metaPayload {
 	return m.addComponent(ComponentTypeButton, ParameterTypeText, text)
+}
+
+func (m *metaPayload) AddFooter(text string) *metaPayload {
+	return m.addComponent(ComponentTypeFooter, ParameterTypeText, text)
 }
 
 func (m *metaPayload) Byte() ([]byte, error) {
