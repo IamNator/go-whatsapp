@@ -7,6 +7,7 @@ import (
 	"fmt"
 	resty "github.com/go-resty/resty/v2"
 	"github.com/iamNator/go-whatsapp/meta"
+	"os"
 	"time"
 
 	"golang.org/x/time/rate"
@@ -17,9 +18,16 @@ type META struct {
 	rateLimiter *rate.Limiter
 	appId       string
 	accessToken string
+	baseURL     string
 }
 
-func NewMETA(metaAppId, metaAppAccessToken string) *META {
+func New(metaAppId, metaAppAccessToken string) *META {
+
+	baseURL := "https://graph.facebook.com"
+
+	if baseU := os.Getenv("META_BASE_URL"); baseU != "" {
+		baseURL = baseU
+	}
 
 	client := resty.New()
 	client.EnableTrace()
@@ -27,7 +35,7 @@ func NewMETA(metaAppId, metaAppAccessToken string) *META {
 	client.SetRetryWaitTime(300 * time.Millisecond)
 	client.SetTimeout(time.Second)
 	client.SetRetryMaxWaitTime(time.Second)
-	client.SetBaseURL("https://graph.facebook.com")
+	client.SetBaseURL(baseURL)
 
 	rateLimiter := rate.NewLimiter(rate.Every(time.Second), 40) // 40 requests per second
 
@@ -36,6 +44,7 @@ func NewMETA(metaAppId, metaAppAccessToken string) *META {
 		client:      client,
 		appId:       metaAppId,
 		accessToken: metaAppAccessToken,
+		baseURL:     baseURL,
 	}
 }
 

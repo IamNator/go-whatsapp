@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	whatsApp := whatsapp.NewMETA("metaAppId", "metaAppAccessToken")
+	whatsApp := whatsapp.New("metaAppId", "metaAppAccessToken")
 
 	data := meta.New("templateName", "+2349045057268", "en_US")
 	data.AddHeader("header").
