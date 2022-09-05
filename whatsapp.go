@@ -5,23 +5,24 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	resty "github.com/go-resty/resty/v2"
-	"github.com/iamNator/go-whatsapp/meta"
 	"os"
 	"time"
+
+	resty "github.com/go-resty/resty/v2"
+	"github.com/iamNator/go-whatsapp/meta"
 
 	"golang.org/x/time/rate"
 )
 
 type META struct {
-	client      *resty.Client
-	rateLimiter *rate.Limiter
-	appId       string
-	accessToken string
-	baseURL     string
+	client        *resty.Client
+	rateLimiter   *rate.Limiter
+	phoneNumberID string
+	accessToken   string
+	baseURL       string
 }
 
-func New(metaAppId, metaAppAccessToken string) *META {
+func New(phoneNumberID, metaAppAccessToken string) *META {
 
 	baseURL := "https://graph.facebook.com"
 
@@ -40,11 +41,11 @@ func New(metaAppId, metaAppAccessToken string) *META {
 	rateLimiter := rate.NewLimiter(rate.Every(time.Second), 40) // 40 requests per second
 
 	return &META{
-		rateLimiter: rateLimiter,
-		client:      client,
-		appId:       metaAppId,
-		accessToken: metaAppAccessToken,
-		baseURL:     baseURL,
+		rateLimiter:   rateLimiter,
+		client:        client,
+		phoneNumberID: phoneNumberID,
+		accessToken:   metaAppAccessToken,
+		baseURL:       baseURL,
 	}
 }
 
@@ -143,7 +144,7 @@ func (m *META) Send(ctx context.Context, msg Message) (*Response, error) {
 		EnableTrace().
 		SetHeader("Authorization", "Bearer "+m.accessToken).
 		SetAuthToken(m.accessToken).
-		Post("/v13.0/" + m.appId + "/messages")
+		Post("/v13.0/" + m.phoneNumberID + "/messages")
 
 	if err != nil {
 		return nil, err
