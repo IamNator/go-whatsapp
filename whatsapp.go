@@ -20,9 +20,17 @@ type META struct {
 	phoneNumberID string
 	accessToken   string
 	baseURL       string
+	apiVersion    string
 }
 
-func New(phoneNumberID, metaAppAccessToken string) *META {
+// New
+//
+// e.g  _meta := New(
+//	         "9484589000430090",
+//				"44NSNANSF094545nLKJGSJFSKF78985395495NKSJNFDJNSKFNSNJFNSDNFSDNFJNSDKFNSDJFNJSDNFJSD",
+//	         "14.0" )
+//
+func New(phoneNumberID, metaAppAccessToken, apiVersion string) *META {
 
 	baseURL := "https://graph.facebook.com"
 
@@ -46,6 +54,7 @@ func New(phoneNumberID, metaAppAccessToken string) *META {
 		phoneNumberID: phoneNumberID,
 		accessToken:   metaAppAccessToken,
 		baseURL:       baseURL,
+		apiVersion:    apiVersion,
 	}
 }
 
@@ -138,13 +147,14 @@ func (m *META) Send(ctx context.Context, msg Message) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	resp, err := m.client.
 		R().
 		SetBody(payload).
 		EnableTrace().
 		SetHeader("Authorization", "Bearer "+m.accessToken).
 		SetAuthToken(m.accessToken).
-		Post("/v13.0/" + m.phoneNumberID + "/messages")
+		Post("/" + m.apiVersion + "/" + m.phoneNumberID + "/messages")
 
 	if err != nil {
 		return nil, err
