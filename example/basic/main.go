@@ -18,13 +18,13 @@ func main() {
 
 	obj, er := data.Byte()
 	if er != nil {
-		fmt.Printf("error: %v", er)
+		fmt.Printf("error: %s", er.Error())
 		return
 	}
 
 	response, er := whatsApp.Send(context.Background(), whatsapp.Message{Data: obj})
 	if er != nil {
-		fmt.Println(er)
+		fmt.Println("error: ", er.Error())
 		return
 	}
 
