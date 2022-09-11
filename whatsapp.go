@@ -19,6 +19,20 @@ type META struct {
 	appId       string
 	accessToken string
 	baseURL     string
+
+	storagePlugin StoragePlugin
+}
+
+func (m *META) AttachStoragePlugin(storagePlugin StoragePlugin) {
+	m.storagePlugin = storagePlugin
+}
+
+func (m *META) GetStoragePlugin() StoragePlugin {
+	return m.storagePlugin
+}
+
+func (m META) CheckStorageExist() bool {
+	return m.storagePlugin != nil
 }
 
 func New(metaAppId, metaAppAccessToken string) *META {
