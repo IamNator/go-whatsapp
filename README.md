@@ -7,3 +7,6 @@
 [![Coverage Status](https://coveralls.io/repos/github/iamNator/go-whatsapp/badge.svg?branch=main)](https://coveralls.io/github/iamNator/go-whatsapp?branch=main)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)]
 
+
+
+A Library for Sending out messages via templates on whatsapp business cloud API.

@@ -14,14 +14,17 @@ import (
 )
 
 type META struct {
-	client      *resty.Client
-	rateLimiter *rate.Limiter
-	appId       string
-	accessToken string
-	baseURL     string
+	client        *resty.Client
+	rateLimiter   *rate.Limiter
+	phoneNumberID string
+	accessToken   string
+	baseURL       string
+	apiVersion    string
+
 
 	storagePlugin StoragePlugin
 }
+
 
 func (m *META) AttachStoragePlugin(storagePlugin StoragePlugin) {
 	m.storagePlugin = storagePlugin
@@ -35,7 +38,14 @@ func (m META) CheckStorageExist() bool {
 	return m.storagePlugin != nil
 }
 
-func New(metaAppId, metaAppAccessToken string) *META {
+// New
+//
+// e.g  _meta := New(
+//	         "9484589000430090",
+//				"44NSNANSF094545nLKJGSJFSKF78985395495NKSJNFDJNSKFNSNJFNSDNFSDNFJNSDKFNSDJFNJSDNFJSD",
+//	         "14.0" )
+//
+func New(phoneNumberID, metaAppAccessToken, apiVersion string) *META {
 
 	baseURL := "https://graph.facebook.com"
 
@@ -54,11 +64,12 @@ func New(metaAppId, metaAppAccessToken string) *META {
 	rateLimiter := rate.NewLimiter(rate.Every(time.Second), 40) // 40 requests per second
 
 	return &META{
-		rateLimiter: rateLimiter,
-		client:      client,
-		appId:       metaAppId,
-		accessToken: metaAppAccessToken,
-		baseURL:     baseURL,
+		rateLimiter:   rateLimiter,
+		client:        client,
+		phoneNumberID: phoneNumberID,
+		accessToken:   metaAppAccessToken,
+		baseURL:       baseURL,
+		apiVersion:    apiVersion,
 	}
 }
 
@@ -151,13 +162,14 @@ func (m *META) Send(ctx context.Context, msg Message) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	resp, err := m.client.
 		R().
 		SetBody(payload).
 		EnableTrace().
 		SetHeader("Authorization", "Bearer "+m.accessToken).
 		SetAuthToken(m.accessToken).
-		Post("/v13.0/" + m.appId + "/messages")
+		Post("/" + m.apiVersion + "/" + m.phoneNumberID + "/messages")
 
 	if err != nil {
 		return nil, err
