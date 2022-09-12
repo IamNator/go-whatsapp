@@ -1,4 +1,4 @@
-package meta_test
+package template_test
 
 import (
 	"github.com/iamNator/go-whatsapp/meta"
@@ -7,7 +7,7 @@ import (
 )
 
 func TestBytes(t *testing.T) {
-	obj := meta.New("signup_otp_1", "+2349045057268", "en_US")
+	obj := template.New("signup_otp_1", "+2349045057268", "en_US")
 
 	obj1 := obj.
 		AddHeader("8967").

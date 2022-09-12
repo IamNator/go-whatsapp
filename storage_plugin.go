@@ -8,9 +8,11 @@ type StoragePlugin interface {
 	Remove(key string) error
 }
 
-type defaultStoragePlugin struct {
-	data map[string]interface{}
-}
+type (
+	defaultStoragePlugin struct {
+		data map[string]interface{}
+	}
+)
 
 func DefaultStore() StoragePlugin {
 	return &defaultStoragePlugin{

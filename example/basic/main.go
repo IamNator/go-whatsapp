@@ -10,7 +10,7 @@ import (
 func main() {
 	whatsApp := whatsapp.New("metaAppId", "metaAppAccessToken")
 
-	data := meta.New("templateName", "+2349045057268", "en_US")
+	data := template.New("templateName", "+2349045057268", "en_US")
 	data.AddHeader("header").
 		AddBody("body").
 		AddBody("body").

@@ -1,4 +1,4 @@
-package meta
+package template
 
 import (
 	"encoding/json"

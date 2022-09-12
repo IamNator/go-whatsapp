@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	resty "github.com/go-resty/resty/v2"
-	"github.com/iamNator/go-whatsapp/meta"
+	"github.com/iamNator/go-whatsapp/template"
 	"os"
 	"time"
 
@@ -21,10 +21,8 @@ type META struct {
 	baseURL       string
 	apiVersion    string
 
-
 	storagePlugin StoragePlugin
 }
-
 
 func (m *META) AttachStoragePlugin(storagePlugin StoragePlugin) {
 	m.storagePlugin = storagePlugin
@@ -132,31 +130,44 @@ const (
 	TypeTemplate string = "template"
 )
 
+type (
+	WhatsappOutput struct {
+		Error            WhatsappOutputError     `json:"error"`
+		MessagingProduct string                  `json:"messaging_product"`
+		Contacts         []WhatsappOutputContact `json:"contacts"`
+		Messages         []WhatsappOutputMessage `json:"messages"`
+	}
+
+	//WhatsappOutputError ..
+	WhatsappOutputError struct {
+		ErrorSubCode uint                    `json:"error_subcode"`
+		ErrorData    WhatsappOutputErrorData `json:"error_data"`
+	}
+
+	WhatsappOutputErrorData struct {
+		Details string `json:"details"`
+	}
+
+	WhatsappOutputContact struct {
+		Input string `json:"input"`
+		WaID  string `json:"wa_id"`
+	}
+
+	WhatsappOutputMessage struct {
+		ID string `json:"id"`
+	}
+)
+
 func (m *META) Send(ctx context.Context, msg Message) (*Response, error) {
 
-	payload, er := meta.FromByteToMap(
+	payload, er := template.FromByteToMap(
 		msg.Data,
 	)
 	if er != nil {
 		return nil, er
 	}
 
-	output := struct {
-		Error struct {
-			ErrorSubcode uint `json:"error_subcode"`
-			ErrorData    struct {
-				Details string `json:"details"`
-			} `json:"error_data"`
-		} `json:"error"`
-		MessagingProduct string `json:"messaging_product"`
-		Contacts         []struct {
-			Input string `json:"input"`
-			WaID  string `json:"wa_id"`
-		} `json:"contacts"`
-		Messages []struct {
-			ID string `json:"id"`
-		} `json:"messages"`
-	}{}
+	var output WhatsappOutput
 
 	err := m.rateLimiter.Wait(ctx) // This is a blocking call. Honors the rate limit
 	if err != nil {
