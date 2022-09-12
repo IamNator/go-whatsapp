@@ -71,7 +71,6 @@ const (
 	//description:
 	//The parameter may not be available or may be spelled incorrectly.
 	//
-	//
 	//Possible solution: Visit the endpoint reference to ensure the parameter exists.
 	ErrAPIInvalidParameter MetaError = "invalid parameter"
 
