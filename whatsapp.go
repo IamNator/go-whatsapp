@@ -1,39 +1,38 @@
 package go_whatsapp
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
-	"fmt"
-	resty "github.com/go-resty/resty/v2"
 	"github.com/iamNator/go-whatsapp/template"
+	"io/ioutil"
+	"net/http"
 	"os"
-	"time"
-
-	"golang.org/x/time/rate"
 )
 
-type META struct {
-	client        *resty.Client
-	rateLimiter   *rate.Limiter
-	phoneNumberID string
-	accessToken   string
-	baseURL       string
-	apiVersion    string
+type (
+	META struct {
+		phoneNumberID string
+		accessToken   string
+		baseURL       string
+		apiVersion    MetaAPIVersion
 
-	storagePlugin StoragePlugin
-}
+		storagePlugin IStoragePlugin
+	}
 
-func (m *META) AttachStoragePlugin(storagePlugin StoragePlugin) {
-	m.storagePlugin = storagePlugin
-}
+	MetaAPIVersion string
+)
 
-func (m *META) GetStoragePlugin() StoragePlugin {
-	return m.storagePlugin
-}
+const (
+	V13 MetaAPIVersion = "13.0" //previous version
+	V14 MetaAPIVersion = "14.0" //latest version
 
-func (m META) CheckStorageExist() bool {
-	return m.storagePlugin != nil
+	V15 MetaAPIVersion = "15.0" //reserved
+	V16 MetaAPIVersion = "16.0" //reserved
+)
+
+func (m MetaAPIVersion) String() string {
+	return string(m)
 }
 
 // New
@@ -43,7 +42,7 @@ func (m META) CheckStorageExist() bool {
 //				"44NSNANSF094545nLKJGSJFSKF78985395495NKSJNFDJNSKFNSNJFNSDNFSDNFJNSDKFNSDJFNJSDNFJSD",
 //	         "14.0" )
 //
-func New(phoneNumberID, metaAppAccessToken, apiVersion string) *META {
+func New(phoneNumberID, metaAppAccessToken string, apiVersion MetaAPIVersion) *META {
 
 	baseURL := "https://graph.facebook.com"
 
@@ -51,24 +50,27 @@ func New(phoneNumberID, metaAppAccessToken, apiVersion string) *META {
 		baseURL = baseU
 	}
 
-	client := resty.New()
-	client.EnableTrace()
-	client.SetRetryCount(3)
-	client.SetRetryWaitTime(300 * time.Millisecond)
-	client.SetTimeout(time.Second)
-	client.SetRetryMaxWaitTime(time.Second)
-	client.SetBaseURL(baseURL)
-
-	rateLimiter := rate.NewLimiter(rate.Every(time.Second), 40) // 40 requests per second
+	// 40 requests per second
 
 	return &META{
-		rateLimiter:   rateLimiter,
-		client:        client,
 		phoneNumberID: phoneNumberID,
 		accessToken:   metaAppAccessToken,
 		baseURL:       baseURL,
 		apiVersion:    apiVersion,
+		storagePlugin: nil,
 	}
+}
+
+func (m *META) AttachStoragePlugin(storagePlugin IStoragePlugin) {
+	m.storagePlugin = storagePlugin
+}
+
+func (m *META) GetStoragePlugin() IStoragePlugin {
+	return m.storagePlugin
+}
+
+func (m META) CheckStorageExist() bool {
+	return m.storagePlugin != nil
 }
 
 type (
@@ -158,48 +160,84 @@ type (
 	}
 )
 
-func (m *META) Send(ctx context.Context, msg Message) (*Response, error) {
+func (m *META) Send(ctx context.Context, msg Message) (*Response, *WhatsappOutputError, error) {
 
 	payload, er := template.FromByteToMap(
 		msg.Data,
 	)
 	if er != nil {
-		return nil, er
+		return nil, nil, er
 	}
 
-	var output WhatsappOutput
-
-	err := m.rateLimiter.Wait(ctx) // This is a blocking call. Honors the rate limit
-	if err != nil {
-		return nil, err
+	url := "/" + m.apiVersion.String() + "/" + m.phoneNumberID + "/messages"
+	headers := map[string]string{
+		"Authorization": "Bearer " + m.accessToken,
 	}
 
-	resp, err := m.client.
-		R().
-		SetBody(payload).
-		EnableTrace().
-		SetHeader("Authorization", "Bearer "+m.accessToken).
-		SetAuthToken(m.accessToken).
-		Post("/" + m.apiVersion + "/" + m.phoneNumberID + "/messages")
-
-	if err != nil {
-		return nil, err
+	output, er := post(url, payload, headers)
+	if er != nil {
+		return nil, nil, er
 	}
 
-	if resp.StatusCode() > 300 {
-		return nil, fmt.Errorf("%s", resp.String())
-	}
-
-	if er := json.Unmarshal([]byte(resp.String()), &output); er != nil {
-		return nil, er
-	}
-
-	//chech for error
-	if output.Error.ErrorData.Details != "" {
-		return nil, errors.New(output.Error.ErrorData.Details)
+	//check for error
+	if output.Error.ErrorSubCode != 0 {
+		return nil, &output.Error, nil
 	}
 
 	return &Response{
 		Status: "success",
-	}, nil
+	}, nil, nil
+}
+
+func post(url string, data map[string]interface{}, headers map[string]string) (*WhatsappOutput, error) {
+
+	rawData, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+	reader := bytes.NewReader(rawData)
+	request, er := http.NewRequest(http.MethodPost, url, reader)
+	if er != nil {
+		return nil, er
+	}
+
+	client := http.DefaultClient
+	response, er := client.Do(request)
+	if er != nil {
+		return nil, er
+	}
+
+	output := new(WhatsappOutput)
+	responseData, er := ioutil.ReadAll(response.Body)
+	if er != nil {
+		return nil, er
+	}
+
+	if er := json.Unmarshal(responseData, output); er != nil {
+		return nil, er
+	}
+
+	return output, nil
+}
+
+func makeKey(key string) string {
+	return "whatsapp_key_" + key + "_whatsapp_key"
+}
+func (m *META) save(key string, value interface{}) error {
+	if !m.CheckStorageExist() {
+		return nil
+	}
+	return m.storagePlugin.Store(makeKey(key), value)
+}
+func (m *META) get(key string) (interface{}, error) {
+	if !m.CheckStorageExist() {
+		return "", nil
+	}
+	return m.storagePlugin.Load(makeKey(key))
+}
+func (m *META) drop(key string) error {
+	if !m.CheckStorageExist() {
+		return nil
+	}
+	return m.storagePlugin.Remove(makeKey(key))
 }

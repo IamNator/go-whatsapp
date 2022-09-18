@@ -2,7 +2,7 @@ package go_whatsapp
 
 import "errors"
 
-type StoragePlugin interface {
+type IStoragePlugin interface {
 	Store(key string, value interface{}) error
 	Load(key string) (interface{}, error)
 	Remove(key string) error
@@ -14,7 +14,7 @@ type (
 	}
 )
 
-func DefaultStore() StoragePlugin {
+func DefaultStore() IStoragePlugin {
 	return &defaultStoragePlugin{
 		data: make(map[string]interface{}),
 	}
