@@ -6,9 +6,6 @@ const (
 	// PackageName name of this package
 	PackageName = "go_whatsapp"
 
-	// DefaultAPIVersion default api version
-	DefaultAPIVersion = "v14"
-
 	// DefaultAPIURL default api url
 	DefaultAPIURL = "https://api.whatsapp.com"
 
@@ -19,18 +16,18 @@ const (
 	DefaultTimeout = 2 * time.Second
 )
 
-// ---------------------------------------- API VERSION
+// ---------------------------------------- API VERSION  ------
 
 type (
 	MetaAPIVersion string
 )
 
 const (
-	V13 MetaAPIVersion = "13.0" //previous version
-	V14 MetaAPIVersion = "14.0" // previous version
+	V13 MetaAPIVersion = "v13.0" //previous version
+	V14 MetaAPIVersion = "v14.0" // previous version
 
-	V15 MetaAPIVersion = "15.0" //latest version
-	V16 MetaAPIVersion = "16.0" //reserved
+	V15 MetaAPIVersion = "v15.0" //latest version
+	V16 MetaAPIVersion = "v16.0" //reserved
 )
 
 func (m MetaAPIVersion) String() string {
