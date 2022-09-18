@@ -73,6 +73,10 @@ func (m META) CheckStorageExist() bool {
 	return m.storagePlugin != nil
 }
 
+func (m *META) SetBaseURL(url string) {
+	m.baseURL = url
+}
+
 type (
 	//nolint
 	metaPayload struct {
@@ -169,7 +173,7 @@ func (m *META) Send(ctx context.Context, msg Message) (*Response, *WhatsappOutpu
 		return nil, nil, er
 	}
 
-	url := "/" + m.apiVersion.String() + "/" + m.phoneNumberID + "/messages"
+	url := m.baseURL + "/" + m.apiVersion.String() + "/" + m.phoneNumberID + "/messages"
 	headers := map[string]string{
 		"Authorization": "Bearer " + m.accessToken,
 	}
