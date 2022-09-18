@@ -217,7 +217,7 @@ func post(url string, data map[string]interface{}, headers map[string]string) (*
 func makeKey(key string) string {
 	return "whatsapp_key_" + key + "_whatsapp_key"
 }
-func (m *META) save(key string, value interface{}) error {
+func (m *META) set(key string, value interface{}) error {
 	if !m.CheckStorageExist() {
 		return nil
 	}
