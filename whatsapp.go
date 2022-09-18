@@ -26,7 +26,7 @@ type (
 // e.g  _meta := New(
 //	         "9484589000430090",
 //				"44NSNANSF094545nLKJGSJFSKF78985395495NKSJNFDJNSKFNSNJFNSDNFSDNFJNSDKFNSDJFNJSDNFJSD",
-//	         "14.0" )
+//	         V14 )
 //
 func New(phoneNumberID, metaAppAccessToken string, apiVersion MetaAPIVersion) *META {
 
