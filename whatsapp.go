@@ -224,6 +224,8 @@ func post(url string, data map[string]interface{}, headers map[string]string) (*
 	return output, nil
 }
 
+// --------------------------------------------------   STORAGE  -----------------------------------------------
+
 func makeKey(key string) string {
 	return "whatsapp_key_" + key + "_whatsapp_key"
 }
