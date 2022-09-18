@@ -1,6 +1,6 @@
 //source: https://developers.facebook.com/docs/whatsapp/cloud-api/support/error-codes
 
-package go_whatsapp
+package error_code
 
 type MetaError string
 
@@ -117,6 +117,9 @@ func (e MetaError) Code() int {
 }
 
 func Error(code int) MetaError {
+	//if code > 100 && code < 200 {
+	//	return ErrAPIInvalidParameter
+	//}
 	return codeErrorMap[code]
 }
 
