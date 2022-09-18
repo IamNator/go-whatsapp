@@ -19,21 +19,7 @@ type (
 
 		storagePlugin IStoragePlugin
 	}
-
-	MetaAPIVersion string
 )
-
-const (
-	V13 MetaAPIVersion = "13.0" //previous version
-	V14 MetaAPIVersion = "14.0" //latest version
-
-	V15 MetaAPIVersion = "15.0" //reserved
-	V16 MetaAPIVersion = "16.0" //reserved
-)
-
-func (m MetaAPIVersion) String() string {
-	return string(m)
-}
 
 // New
 //
@@ -192,6 +178,8 @@ func (m *META) Send(ctx context.Context, msg Message) (*Response, *WhatsappOutpu
 		Status: "success",
 	}, nil, nil
 }
+
+// ------------------------------------------------  REST CALLS -------------------------------
 
 func post(url string, data map[string]interface{}, headers map[string]string) (*WhatsappOutput, error) {
 
