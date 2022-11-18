@@ -2,16 +2,9 @@ package go_whatsapp
 
 import "time"
 
-type Constant interface {
-	string | int | int64 | float64 | bool
-}
-
 const (
 	// PackageName name of this package
 	PackageName = "go_whatsapp"
-
-	// DefaultAPIVersion default api version
-	DefaultAPIVersion = "v14"
 
 	// DefaultAPIURL default api url
 	DefaultAPIURL = "https://api.whatsapp.com"
@@ -22,3 +15,21 @@ const (
 	// DefaultTimeout default timeout
 	DefaultTimeout = 2 * time.Second
 )
+
+// ---------------------------------------- API VERSION  ------
+
+type (
+	MetaAPIVersion string
+)
+
+const (
+	V13 MetaAPIVersion = "v13.0" //previous version
+	V14 MetaAPIVersion = "v14.0" // previous version
+
+	V15 MetaAPIVersion = "v15.0" //latest version
+	V16 MetaAPIVersion = "v16.0" //reserved
+)
+
+func (m MetaAPIVersion) String() string {
+	return string(m)
+}
