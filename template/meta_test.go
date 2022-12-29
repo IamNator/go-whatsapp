@@ -1,9 +1,10 @@
 package template_test
 
 import (
-	"github.com/iamNator/go-whatsapp/meta"
 	"strings"
 	"testing"
+
+	"github.com/iamNator/go-whatsapp/template"
 )
 
 func TestBytes(t *testing.T) {

@@ -199,17 +199,17 @@ func post(url string, data map[string]interface{}, headers map[string]string) (*
 		return nil, er
 	}
 
-	output := new(WhatsappOutput)
+	var output WhatsappOutput
 	responseData, er := ioutil.ReadAll(response.Body)
 	if er != nil {
 		return nil, er
 	}
 
-	if er := json.Unmarshal(responseData, output); er != nil {
+	if er := json.Unmarshal(responseData, &output); er != nil {
 		return nil, er
 	}
 
-	return output, nil
+	return &output, nil
 }
 
 // --------------------------------------------------   STORAGE  -----------------------------------------------
@@ -223,12 +223,14 @@ func (m *META) set(key string, value interface{}) error {
 	}
 	return m.storagePlugin.Store(makeKey(key), value)
 }
+
 func (m *META) get(key string) (interface{}, error) {
 	if !m.CheckStorageExist() {
 		return "", nil
 	}
 	return m.storagePlugin.Load(makeKey(key))
 }
+
 func (m *META) drop(key string) error {
 	if !m.CheckStorageExist() {
 		return nil
