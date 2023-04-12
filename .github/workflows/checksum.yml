@@ -24,4 +24,4 @@ jobs:
 
       - name: Print checksum
         run: |
-        echo "Checksum: ${{ steps.get_checksum.outputs.checksum }}"
+          echo "checksum: ${{ steps.get_checksum.outputs.checksum }}"
