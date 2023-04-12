@@ -12,7 +12,7 @@ This is a Go-Lang library that helps you send messages using pre-made templates 
 
 
 
-### Sending a message via Template
+### Send message using pre-made templates
 ````
 package main
 
@@ -50,7 +50,7 @@ func main() {
 ````
 
 
-### Sending raw text
+### Send raw text
 
 ```
 package main
