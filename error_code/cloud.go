@@ -8,6 +8,7 @@ func (e MetaError) Error() string {
 	return string(e)
 }
 
+
 const (
 
 	// ################ Authorization Errors ################
@@ -436,18 +437,25 @@ var (
 	}()
 )
 
-func (e MetaError) Code() int {
-	return errCodeMap[e]
+// IsValid returns true if the error is a valid meta error.
+func (e MetaError) IsValid() bool {
+	_, ok := errCodeMap[e]
+	return ok
 }
 
+// Error returns the error string.
 func Error(code int) MetaError {
-	//if code > 100 && code < 201 {
-	//	return ErrAPIInvalidParameter
-	//}
 	return codeErrorMap[code]
 }
 
+// IsError returns true if the error is a valid meta error.
 func IsError(err error) bool {
 	_, ok := err.(MetaError)
 	return ok
 }
+
+// Code returns the error code.
+func (e MetaError) Code() int {
+	return errCodeMap[e]
+}
+
