@@ -1,11 +1,7 @@
 package go_whatsapp
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
-	"io/ioutil"
-	"net/http"
 	"os"
 
 	"github.com/iamNator/go-whatsapp/errors"
@@ -18,6 +14,7 @@ type (
 		accessToken   string
 		baseURL       string
 		apiVersion    MetaAPIVersion
+		apiCaller     IApiCaller
 	}
 )
 
@@ -43,6 +40,7 @@ func New(phoneNumberID, metaAppAccessToken string, apiVersion MetaAPIVersion) *M
 		accessToken:   metaAppAccessToken,
 		baseURL:       baseURL,
 		apiVersion:    apiVersion,
+		apiCaller:     &apiCaller{},
 	}
 }
 
@@ -98,7 +96,7 @@ func (m *META) Send(ctx context.Context, msg RequestPayload) (*APIResponse, *API
 		return nil, nil, er
 	}
 
-	output, er := Post[APIResponse](
+	output, er := m.apiCaller.Post(
 		url,
 		data,
 		headers)
@@ -130,7 +128,7 @@ func (m *META) SendText(ctx context.Context, to string, text string) (*APIRespon
 		return nil, nil, er
 	}
 
-	output, er := Post[APIResponse](
+	output, er := m.apiCaller.Post(
 		url,
 		data,
 		headers)
@@ -162,7 +160,7 @@ func (m *META) SendTemplate(ctx context.Context, to string, tmpl template.Templa
 		return nil, nil, er
 	}
 
-	output, er := Post[APIResponse](
+	output, er := m.apiCaller.Post(
 		url,
 		data,
 		headers)
@@ -179,29 +177,3 @@ func (m *META) SendTemplate(ctx context.Context, to string, tmpl template.Templa
 }
 
 // ------------------------------------------------  REST CALLS -------------------------------
-
-func Post[Response any](url string, data []byte, headers map[string]string) (*Response, error) {
-
-	request, er := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
-	if er != nil {
-		return nil, er
-	}
-
-	client := http.DefaultClient
-	response, er := client.Do(request)
-	if er != nil {
-		return nil, er
-	}
-
-	responseData, er := ioutil.ReadAll(response.Body)
-	if er != nil {
-		return nil, er
-	}
-
-	var output Response
-	if er := json.Unmarshal(responseData, &output); er != nil {
-		return nil, er
-	}
-
-	return &output, nil
-}
