@@ -1,21 +1,21 @@
 package template_test
 
 import (
-	"github.com/iamNator/go-whatsapp/meta"
 	"strings"
 	"testing"
+
+	"github.com/iamNator/go-whatsapp/template"
 )
 
 func TestBytes(t *testing.T) {
 	obj := template.New("signup_otp_1", "+2349045057268", "en_US")
 
-	obj1 := obj.
+	b, er := obj.
 		AddHeader("8967").
 		AddBody("Ire").
 		AddBody("8967").
-		AddBody("15")
-
-	b, er := obj1.Byte()
+		AddBody("15").
+		Byte()
 	if er != nil {
 		t.Errorf("error: %v", er)
 	}
@@ -24,4 +24,35 @@ func TestBytes(t *testing.T) {
 		t.Errorf("mismatched")
 	}
 
+}
+
+func TestCleanText(t *testing.T) {
+	tests := []struct {
+		Args     string
+		Expected string
+	}{
+		{
+			Args:     "Hi    	You doing?  ",
+			Expected: "Hi You doing?",
+		},
+		{
+			Args:     "Hi    	You doing?  ",
+			Expected: "Hi You doing?",
+		},
+		{
+			Args:     "Hi    	You doing?  ",
+			Expected: "Hi You doing?",
+		},
+		{
+			Args:     "Hi    	You doing?  ",
+			Expected: "Hi You doing?",
+		},
+	}
+
+	for i, tt := range tests {
+		actual := template.CleanText(tt.Args)
+		if actual != tt.Expected {
+			t.Errorf(`Test (%d): expected "%s", actual "%s"`, i, tt.Expected, actual)
+		}
+	}
 }
