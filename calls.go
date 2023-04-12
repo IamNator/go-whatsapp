@@ -7,6 +7,9 @@ import (
 	"net/http"
 )
 
+// IApiCaller is the interface for the API caller
+//
+// It interfaces with external network resources
 type IApiCaller interface {
 	Post(url string, data []byte, headers map[string]string) (*APIResponse, error)
 }

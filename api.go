@@ -40,12 +40,20 @@ func New(phoneNumberID, metaAppAccessToken string, apiVersion MetaAPIVersion) *M
 		accessToken:   metaAppAccessToken,
 		baseURL:       baseURL,
 		apiVersion:    apiVersion,
-		apiCaller:     &apiCaller{},
+		apiCaller:     &apiCaller{},  // default
 	}
 }
 
 func (m *META) SetBaseURL(url string) {
 	m.baseURL = url
+}
+
+func (m *META) SetApiVersion(apiVersion MetaAPIVersion) {
+	m.apiVersion = apiVersion
+}
+
+func (m *META) SetApiCaller(apiCaller IApiCaller) {
+	m.apiCaller = apiCaller
 }
 
 type (
