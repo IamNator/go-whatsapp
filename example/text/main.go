@@ -1,3 +1,4 @@
+//
 //package main
 //
 //import (
@@ -17,7 +18,12 @@
 //		return
 //	}
 //
-//	fmt.Println("Err: ", errResponse, "\nResponse: ", response)
+//	if errResponse != nil {
+//		fmt.Println("ErrorResponse: ", errResponse.Message)
+//		return
+//	}
+//
+//	fmt.Println("Response: ", response)
 //}
 
 package main
@@ -39,5 +45,10 @@ func main() {
 		return
 	}
 
-	fmt.Println("Err: ", errResponse, "\nResponse: ", response)
+	if errResponse != nil {
+		fmt.Println("ErrorResponse: ", errResponse.Message)
+		return
+	}
+
+	fmt.Println("Response: ", response)
 }

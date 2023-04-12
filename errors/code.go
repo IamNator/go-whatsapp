@@ -57,10 +57,10 @@ const (
 	// summary: Access token has expired.
 	//
 	// description:
-	// Your access token has expired.
+	// Your access token has expired or is invalid.
 	//
 	// Possible solution: Get a new access token.
-	ErrAccessTokenHasExpired MetaError = "access token has expired"
+	ErrAccessTokenHasExpired MetaError = "access token has expired or is invalid"
 
 	// ErrAPIPermission
 	//
@@ -404,22 +404,22 @@ const (
 var (
 	errCodeMap = map[MetaError]int{
 		// Authorization Errors [ 5 ]
-		ErrAuthException:         0,
-		ErrAPIMethod:             3,
-		ErrAPIPermissionDenied:   10,
-		ErrAccessTokenHasExpired: 190,
-		ErrAPIPermission:         200, // 200-299
+		ErrAuthException:         0,   // 401
+		ErrAPIMethod:             3,   // 403
+		ErrAPIPermissionDenied:   10,  // 403
+		ErrAccessTokenHasExpired: 190, // 403
+		ErrAPIPermission:         200, // status: 200-299 but http code: 403
 
 		// Throttling Errors [ 5 ]
-		ErrAPITooManyCalls:  4,
-		ErrRateLimitIssues:  80007,
-		ErrRateLimitHit:     130429,
-		ErrSpamRateLimitHit: 131048,
-		ErrPairRateLimitHit: 131056,
+		ErrAPITooManyCalls:  4,      // 429
+		ErrRateLimitIssues:  80007,  // 429
+		ErrRateLimitHit:     130429, // 429
+		ErrSpamRateLimitHit: 131048, // 429
+		ErrPairRateLimitHit: 131056, // 429
 
 		// Integrity Errors [ 2 ]
-		ErrTemporarilyBlocked: 368,
-		ErrAccountLocked:      131031,
+		ErrTemporarilyBlocked: 368,    // 403
+		ErrAccountLocked:      131031, // 403
 
 		// Other Errors. [ 20 ]
 		ErrAPIUnknown:                            1,
@@ -459,8 +459,16 @@ var (
 		for err, code := range errCodeMap {
 			codeErrorMap[code] = err
 		}
+
+		// add ErrAPIPermission for 200-299
+		for i := 200; i < 300; i++ {
+			codeErrorMap[i] = ErrAPIPermission
+		}
+
 		return codeErrorMap
 	}()
+
+	NoError = MetaError("")
 )
 
 // IsValid returns true if the error is a valid meta error.
@@ -478,6 +486,20 @@ func Error(code int) MetaError {
 func IsError(err error) bool {
 	_, ok := err.(MetaError)
 	return ok
+}
+
+func IsErrorCode(code int, statusCode int) bool {
+
+	if code == 0 && statusCode == 403 {
+		return true
+	}
+
+	_, ok := codeErrorMap[code]
+	if ok {
+		return true
+	}
+
+	return false
 }
 
 // Code returns the error code.

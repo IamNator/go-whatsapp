@@ -2,9 +2,9 @@ package go_whatsapp
 
 import (
 	"context"
+	"github.com/iamNator/go-whatsapp/errors"
 	"os"
 
-	"github.com/iamNator/go-whatsapp/errors"
 	"github.com/iamNator/go-whatsapp/template"
 )
 
@@ -40,7 +40,7 @@ func New(phoneNumberID, metaAppAccessToken string, apiVersion MetaAPIVersion) *M
 		accessToken:   metaAppAccessToken,
 		baseURL:       baseURL,
 		apiVersion:    apiVersion,
-		apiCaller:     &apiCaller{},  // default
+		apiCaller:     &apiCaller{}, // default
 	}
 }
 
@@ -60,12 +60,12 @@ type (
 
 	//WhatsappOutputError ..
 	APIError struct {
-		Message      string           `json:"message"`
-		Type         string           `json:"type"`
-		Code         errors.MetaError `json:"code"`
-		ErrorData    APIErrorData     `json:"error_data"`
-		ErrorSubCode uint             `json:"error_subcode"`
-		FBTraceID    string           `json:"fbtrace_id"`
+		Message      string       `json:"message"`
+		Type         string       `json:"type"`
+		Code         int          `json:"code"`
+		ErrorData    APIErrorData `json:"error_data"`
+		ErrorSubCode uint         `json:"error_subcode"`
+		FBTraceID    string       `json:"fbtrace_id"`
 	}
 
 	APIErrorData struct {
@@ -90,6 +90,10 @@ type (
 	}
 )
 
+func (e APIError) Error() string {
+	return errors.Error(e.Code).Error()
+}
+
 // Send sends a message
 func (m *META) Send(ctx context.Context, msg RequestPayload) (*APIResponse, *APIError, error) {
 
@@ -104,12 +108,17 @@ func (m *META) Send(ctx context.Context, msg RequestPayload) (*APIResponse, *API
 		return nil, nil, er
 	}
 
-	output, er := m.apiCaller.Post(
+	output, statusCode, er := m.apiCaller.Post(
 		url,
 		data,
 		headers)
 	if er != nil {
 		return nil, nil, er
+	}
+
+	//check for error
+	if errors.IsErrorCode(output.Error.Code, statusCode) {
+		return nil, &output.Error, nil
 	}
 
 	//check for error
@@ -136,12 +145,17 @@ func (m *META) SendText(ctx context.Context, to string, text string) (*APIRespon
 		return nil, nil, er
 	}
 
-	output, er := m.apiCaller.Post(
+	output, statusCode, er := m.apiCaller.Post(
 		url,
 		data,
 		headers)
 	if er != nil {
 		return nil, nil, er
+	}
+
+	//check for error
+	if errors.IsErrorCode(output.Error.Code, statusCode) {
+		return nil, &output.Error, nil
 	}
 
 	//check for error
@@ -153,6 +167,14 @@ func (m *META) SendText(ctx context.Context, to string, text string) (*APIRespon
 }
 
 // SendTemplate sends a template message
+//
+// APIResponse, *APIError, error
+//
+// APIResponse: response from the server
+//
+// *APIError: error from the server
+//
+// error: error from the client
 func (m *META) SendTemplate(ctx context.Context, to string, tmpl template.Template) (*APIResponse, *APIError, error) {
 
 	msg := NewPayloadWithTemplate(to, tmpl)
@@ -168,7 +190,7 @@ func (m *META) SendTemplate(ctx context.Context, to string, tmpl template.Templa
 		return nil, nil, er
 	}
 
-	output, er := m.apiCaller.Post(
+	output, statusCode, er := m.apiCaller.Post(
 		url,
 		data,
 		headers)
@@ -177,7 +199,7 @@ func (m *META) SendTemplate(ctx context.Context, to string, tmpl template.Templa
 	}
 
 	//check for error
-	if output.Error.ErrorSubCode != 0 {
+	if errors.IsErrorCode(output.Error.Code, statusCode) {
 		return nil, &output.Error, nil
 	}
 
