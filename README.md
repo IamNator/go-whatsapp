@@ -19,14 +19,15 @@ package main
 import (
 	"context"
 	"fmt"
+
 	whatsapp "github.com/iamNator/go-whatsapp"
-	"github.com/iamNator/go-whatsapp/meta"
+	"github.com/iamNator/go-whatsapp/template"
 )
 
 func main() {
-	whatsApp := whatsapp.New("metaAppId", "metaAppAccessToken")
+	whatsApp := whatsapp.New("metaAppId", "metaAppAccessToken", whatsapp.V15)
 
-	data := template.New("templateName", "+2349045057268", "en_US")
+	data := template.New("templateName", "+2349045057268", template.EN_US)
 	data.AddHeader("header").
 		AddBody("body").
 		AddBody("body").
@@ -38,13 +39,13 @@ func main() {
 		return
 	}
 
-	response, er := whatsApp.Send(context.Background(), whatsapp.Message{Data: obj})
+	response, errResponse, er := whatsApp.Send(context.Background(), whatsapp.Message{Data: obj})
 	if er != nil {
 		fmt.Println("error: ", er.Error())
 		return
 	}
 
-	fmt.Println(response)
+	fmt.Println("Err: ", errResponse, "\nResponse: ", response)
 }
 
 ````
