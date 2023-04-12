@@ -35,7 +35,7 @@ func (m *RequestPayload) Byte() ([]byte, error) {
 	return json.Marshal(m)
 }
 
-func removeLeadPlusSign(s string) string {
+func removeLeadingPlusSign(s string) string {
 	return strings.ReplaceAll(s, "+", "")
 }
 
@@ -43,7 +43,7 @@ func NewPayload(templateName, to string, langCode template.LanguageCode) *Reques
 
 	return &RequestPayload{
 		MessagingProduct: whatsApp,
-		To:               removeLeadPlusSign(to),
+		To:               removeLeadingPlusSign(to),
 		Type:             TypeTemplate,
 		Template:         template.New(templateName, langCode),
 	}
