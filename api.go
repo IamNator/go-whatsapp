@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"github.com/iamNator/go-whatsapp/errors"
+	"github.com/iamNator/go-whatsapp/template"
 )
 
 type (
@@ -83,7 +84,72 @@ type (
 	}
 )
 
+// Send sends a message
 func (m *META) Send(ctx context.Context, msg RequestPayload) (*APIResponse, *APIError, error) {
+
+	url := m.baseURL + "/" + m.apiVersion.String() + "/" + m.phoneNumberID + "/messages"
+	headers := map[string]string{
+		"Authorization": "Bearer " + m.accessToken,
+	}
+
+	//convert to json
+	data, er := msg.Byte()
+	if er != nil {
+		return nil, nil, er
+	}
+
+	output, er := Post[APIResponse](
+		url,
+		data,
+		headers)
+	if er != nil {
+		return nil, nil, er
+	}
+
+	//check for error
+	if output.Error.ErrorSubCode != 0 {
+		return nil, &output.Error, nil
+	}
+
+	return output, nil, nil
+}
+
+// SendText sends a text message
+func (m *META) SendText(ctx context.Context, to string, text string) (*APIResponse, *APIError, error) {
+
+	msg := NewPayloadWithText(to, text)
+
+	url := m.baseURL + "/" + m.apiVersion.String() + "/" + m.phoneNumberID + "/messages"
+	headers := map[string]string{
+		"Authorization": "Bearer " + m.accessToken,
+	}
+
+	//convert to json
+	data, er := msg.Byte()
+	if er != nil {
+		return nil, nil, er
+	}
+
+	output, er := Post[APIResponse](
+		url,
+		data,
+		headers)
+	if er != nil {
+		return nil, nil, er
+	}
+
+	//check for error
+	if output.Error.ErrorSubCode != 0 {
+		return nil, &output.Error, nil
+	}
+
+	return output, nil, nil
+}
+
+// SendTemplate sends a template message
+func (m *META) SendTemplate(ctx context.Context, to string, tmpl template.Template) (*APIResponse, *APIError, error) {
+
+	msg := NewPayloadWithTemplate(to, tmpl)
 
 	url := m.baseURL + "/" + m.apiVersion.String() + "/" + m.phoneNumberID + "/messages"
 	headers := map[string]string{

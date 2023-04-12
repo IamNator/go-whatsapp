@@ -28,16 +28,16 @@ func main() {
 	client := whatsapp.New("metaAppId", "metaAppAccessToken", whatsapp.V15)
 
 	// prepare the payload
-	data := whatsapp.NewPayload("templateName", "+2349045057268", template.EN_US)
 
 	//build the template
-	data.Template.AddHeader("header").
+	tmpl := template.New("templateName", template.EN_US).AddHeader("header").
 		AddBody("body").
 		AddBody("body").
-		AddBody("body")
+		AddBody("body").
+		Done()
 
 	// send the request
-	response, errResponse, er := client.Send(context.Background(), *data)
+	response, errResponse, er := client.SendTemplate(context.Background(), "2349045057268", tmpl)
 	if er != nil {
 		fmt.Println("error: ", er.Error())
 		return

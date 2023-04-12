@@ -175,6 +175,10 @@ func (m *Template) AddButtonQuickReply(text string) *Template {
 	return m.addComponent(ComponentTypeButton, SubTypeQuickReply, ParameterTypeButtonPayload, CleanText(text))
 }
 
+func (m Template) Done() Template {
+	return m
+}
+
 // addComponent ...
 //
 //	takes in a component_type, parameter_type and value

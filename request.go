@@ -39,6 +39,7 @@ func removeLeadingPlusSign(s string) string {
 	return strings.ReplaceAll(s, "+", "")
 }
 
+// Deprecated
 func NewPayload(templateName, to string, langCode template.LanguageCode) *RequestPayload {
 
 	return &RequestPayload{
@@ -46,6 +47,26 @@ func NewPayload(templateName, to string, langCode template.LanguageCode) *Reques
 		To:               removeLeadingPlusSign(to),
 		Type:             TypeTemplate,
 		Template:         template.New(templateName, langCode),
+	}
+}
+
+func NewPayloadWithText(to, text string) *RequestPayload {
+	return &RequestPayload{
+		MessagingProduct: whatsApp,
+		To:               removeLeadingPlusSign(to),
+		Type:             TypeText,
+		Text: &Text{
+			Body: text,
+		},
+	}
+}
+
+func NewPayloadWithTemplate(to string, tmpl template.Template) *RequestPayload {
+	return &RequestPayload{
+		MessagingProduct: whatsApp,
+		To:               removeLeadingPlusSign(to),
+		Type:             TypeTemplate,
+		Template:         &tmpl,
 	}
 }
 
