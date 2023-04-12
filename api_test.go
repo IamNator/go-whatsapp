@@ -9,9 +9,9 @@ type testApiCaller struct {
 	network map[string]APIResponse
 }
 
-func (m *testApiCaller) Post(url string, data []byte, headers map[string]string) (*APIResponse, error) {
+func (m *testApiCaller) Post(url string, data []byte, headers map[string]string) (*APIResponse, int, error) {
 	response := m.network[url+string(data)]
-	return &response, nil
+	return &response, 200, nil
 }
 
 // TODO: write better tests
