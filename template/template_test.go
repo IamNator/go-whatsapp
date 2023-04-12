@@ -26,27 +26,25 @@ func TestBytes(t *testing.T) {
 	}{
 		{
 			TemplateName: "signup_otp_1",
-			To:           "+2349045057268",
 			Language:     template.EN_US,
 			Components: components{
 				Header: []string{"8967"},
 				Body:   []string{"Ire", "8967", "15"},
 			},
-			Output: `{"messaging_product":"whatsapp","to":"2349045057268","type":"template","template":{"name":"signup_otp_1","language":{"code":"en_US"},"components":[{"type":"header","parameters":[{"type":"text","text":"8967"}]},{"type":"body","parameters":[{"type":"text","text":"Ire"},{"type":"text","text":"8967"},{"type":"text","text":"15"}]}]}}`,
+			Output: `{"name":"signup_otp_1","language":{"code":"en_US"},"components":[{"type":"header","parameters":[{"type":"text","text":"8967"}]},{"type":"body","parameters":[{"type":"text","text":"Ire"},{"type":"text","text":"8967"},{"type":"text","text":"15"}]}]}`,
 		},
 		{
 			TemplateName: "signup_otp_1",
-			To:           "+2349045057268",
 			Language:     template.EnglishUS,
 			Components: components{
 				Body: []string{"Ife", "8967", "15"},
 			},
-			Output: `{"messaging_product":"whatsapp","to":"2349045057268","type":"template","template":{"name":"signup_otp_1","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"Ife"},{"type":"text","text":"8967"},{"type":"text","text":"15"}]}]}}`,
+			Output: `{"name":"signup_otp_1","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"Ife"},{"type":"text","text":"8967"},{"type":"text","text":"15"}]}]}`,
 		},
 	}
 
 	for _, tc := range tt {
-		obj := template.New(tc.TemplateName, tc.To, tc.Language)
+		obj := template.New(tc.TemplateName, tc.Language)
 
 		for _, h := range tc.Components.Header {
 			obj.AddHeader(h)
@@ -58,12 +56,12 @@ func TestBytes(t *testing.T) {
 			obj.AddButton(f)
 		}
 
-		b, er := obj.Byte()
+		got, er := obj.String()
 		if er != nil {
 			t.Errorf("error: %v", er)
 		}
 
-		if string(b) != strings.TrimSpace(tc.Output) {
+		if got != strings.TrimSpace(tc.Output) {
 			t.Errorf("mismatched")
 		}
 	}

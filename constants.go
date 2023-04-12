@@ -13,7 +13,7 @@ const (
 	DefaultRateLimit = 200 // 200 requests per second -> max is about 500/second
 
 	// DefaultTimeout default timeout
-	DefaultTimeout = 2 * time.Second
+	DefaultTimeout = 3 * time.Second
 )
 
 // ---------------------------------------- API VERSION  ------
@@ -23,11 +23,11 @@ type (
 )
 
 const (
-	V13 MetaAPIVersion = "v13.0" //previous version
-	V14 MetaAPIVersion = "v14.0" // previous version
+	V13 MetaAPIVersion = "v13.0"
+	V14 MetaAPIVersion = "v14.0"
 
-	V15 MetaAPIVersion = "v15.0" //latest version
-	V16 MetaAPIVersion = "v16.0" //reserved
+	V15 MetaAPIVersion = "v15.0" // 2022
+	V16 MetaAPIVersion = "v16.0" // 2023
 )
 
 func (m MetaAPIVersion) String() string {

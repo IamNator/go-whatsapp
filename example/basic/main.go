@@ -9,21 +9,19 @@ import (
 )
 
 func main() {
-	whatsApp := whatsapp.New("metaAppId", "metaAppAccessToken", whatsapp.V15)
+	client := whatsapp.New("metaAppId", "metaAppAccessToken", whatsapp.V15)
 
-	data := template.New("templateName", "+2349045057268", template.EN_US)
-	data.AddHeader("header").
+	// prepare the payload
+	data := whatsapp.NewPayload("templateName", "+2349045057268", template.EN_US)
+
+	//build the template
+	data.Template.AddHeader("header").
 		AddBody("body").
 		AddBody("body").
 		AddBody("body")
 
-	obj, er := data.Byte()
-	if er != nil {
-		fmt.Printf("error: %s", er.Error())
-		return
-	}
-
-	response, errResponse, er := whatsApp.Send(context.Background(), whatsapp.Message{Data: obj})
+	// send the request
+	response, errResponse, er := client.Send(context.Background(), *data)
 	if er != nil {
 		fmt.Println("error: ", er.Error())
 		return

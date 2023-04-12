@@ -10,50 +10,25 @@ import (
 //https://developers.facebook.com/docs/whatsapp/cloud-api/reference/messages/#template-messages
 
 type (
-	metaPayload struct {
-		MessagingProduct string               `json:"messaging_product"`
-		To               string               `json:"to"`
-		Type             PayloadType          `json:"type"`
-		Text             *Text                `json:"text,omitempty"`
-		Template         *MetaPayloadTemplate `json:"template"`
-	}
-
-	PayloadType string
-
-	Text struct {
-		Body string `json:"body"`
-	}
-
-	MetaPayloadTemplate struct {
-		Name       string      `json:"name"`
-		Language   *Language   `json:"language"`
-		Components []Component `json:"components"`
-	}
-
 	Language struct {
 		Code string `json:"code"`
 	}
 
-	Component struct {
-		Type       ComponentType        `json:"type"`
-		Parameters []ParameterInterface `json:"parameters"`
-
-		SubType SubType `json:"sub_type,omitempty"` // e.g quick_reply, url etc
-		Index   string  `json:"index,omitempty"`    // e.g 0, 1, 2, 3 etc
-	}
+	// subtypes of ComponentType e.g text, image, quick_reply, url etc
+	ParameterType string
 
 	Parameter struct {
 		Type ParameterType `json:"type"`
 		Text string        `json:"text"`
 	}
 
+	ImageLink struct {
+		Link string `json:"link"`
+	}
+
 	ImageParameter struct {
 		Type  ParameterType `json:"type"`
 		Image ImageLink     `json:"image"`
-	}
-
-	ImageLink struct {
-		Link string `json:"link"`
 	}
 
 	//ButtonPayloadParameter ...
@@ -73,23 +48,30 @@ type (
 
 	SubType string // e.g quick_reply, url etc
 
-	// subtypes of ComponentType e.g text, image, quick_reply, url etc
-	ParameterType string
+	// Component ...
+	Component struct {
+		Type       ComponentType        `json:"type"` // e.g header, body, button etc
+		Parameters []ParameterInterface `json:"parameters"`
+		SubType    SubType              `json:"sub_type,omitempty"` // e.g quick_reply, url etc
+		Index      string               `json:"index,omitempty"`    // e.g 0, 1, 2, 3 etc
+	}
 
+	// Template ...
+	Template struct {
+		Name       string      `json:"name"`
+		Language   *Language   `json:"language"`
+		Components []Component `json:"components"`
+	}
 )
 
-
 const (
-	TypeText     PayloadType = "text"
-	TypeTemplate PayloadType = "template"
-
 	ComponentTypeHeader ComponentType = "header"
 	ComponentTypeBody   ComponentType = "body"
 	ComponentTypeButton ComponentType = "button"
 
 	SubTypeQuickReply SubType = "quick_reply"
 	SubTypeTypeUrl    SubType = "url"
-	SubTypeNone       SubType = ""
+	SubTypeNone       SubType = "" //do not delete
 
 	ParameterTypeText  ParameterType = "text"
 	ParameterTypeImage ParameterType = "image" //not sure
@@ -137,22 +119,19 @@ func BuildParameter(parameterType ParameterType, value string) ParameterInterfac
 
 	}
 
-	panic("please help me")
+	panic("please help me") // TODO: return error
 }
 
-func New(templateName, to string, langCode LanguageCode) *metaPayload {
-	to = strings.Trim(to, "+")
-	return &metaPayload{
-		MessagingProduct: "whatsapp",
-		To:               strings.ReplaceAll(to, "+", ""),
-		Type:             TypeTemplate,
-		Template: &MetaPayloadTemplate{
-			Name: templateName,
-			Language: &Language{
-				Code: langCode.String(),
-			},
+func New(templateName string, langCode LanguageCode) *Template {
+
+	return &Template{
+
+		Name: templateName,
+		Language: &Language{
+			Code: langCode.String(),
 		},
 	}
+
 }
 
 // CleanText removes all double spaces, new lines and tabs from a string
@@ -168,45 +147,32 @@ func CleanText(s string) string {
 
 	return s
 }
-func (m *metaPayload) AddHeader(text string) *metaPayload {
+func (m *Template) AddHeader(text string) *Template {
 	return m.addComponent(ComponentTypeHeader, SubTypeNone, ParameterTypeText, CleanText(text))
 }
 
-func (m *metaPayload) AddHeaderImage(imageLink string) *metaPayload {
+func (m *Template) AddHeaderImage(imageLink string) *Template {
 	return m.addComponent(ComponentTypeHeader, SubTypeNone, ParameterTypeImage, CleanText(imageLink))
 }
 
-func (m *metaPayload) AddImage(imageLink string) *metaPayload {
+func (m *Template) AddImage(imageLink string) *Template {
 	return m.addComponent(ComponentTypeHeader, SubTypeNone, ParameterTypeImage, CleanText(imageLink))
 }
 
-func (m *metaPayload) AddBody(text string) *metaPayload {
+func (m *Template) AddBody(text string) *Template {
 	return m.addComponent(ComponentTypeBody, SubTypeNone, ParameterTypeText, CleanText(text))
 }
 
-func (m *metaPayload) AddButton(text string) *metaPayload {
+func (m *Template) AddButton(text string) *Template {
 	return m.addComponent(ComponentTypeButton, SubTypeNone, ParameterTypeText, CleanText(text))
 }
 
-func (m *metaPayload) AddButtonURL(link string) *metaPayload {
+func (m *Template) AddButtonURL(link string) *Template {
 	return m.addComponent(ComponentTypeButton, SubTypeTypeUrl, ParameterTypeText, CleanText(link))
 }
 
-func (m *metaPayload) AddButtonQuickReply(text string) *metaPayload {
+func (m *Template) AddButtonQuickReply(text string) *Template {
 	return m.addComponent(ComponentTypeButton, SubTypeQuickReply, ParameterTypeButtonPayload, CleanText(text))
-}
-
-func (m *metaPayload) Byte() ([]byte, error) {
-	return json.Marshal(m)
-}
-
-func NewFromBytes(b []byte) (*metaPayload, error) {
-	var m metaPayload
-	if er := json.Unmarshal(b, &m); er != nil {
-		return nil, er
-	}
-
-	return &m, nil
 }
 
 // addComponent ...
@@ -236,7 +202,7 @@ func NewFromBytes(b []byte) (*metaPayload, error) {
 //	}
 //
 // ]
-func (m *metaPayload) addComponent(componentType ComponentType, subType SubType, parameterType ParameterType, value string) *metaPayload {
+func (m *Template) addComponent(componentType ComponentType, subType SubType, parameterType ParameterType, value string) *Template {
 
 	// 1.  if component does not exist, create it
 	// 2.  append the parameter to the component if it exists
@@ -251,8 +217,8 @@ func (m *metaPayload) addComponent(componentType ComponentType, subType SubType,
 	//	"parameters": [{}]
 	// }
 	//
-	if len(m.Template.Components) < 1 {
-		m.Template.Components = make([]Component, 0)
+	if len(m.Components) < 1 {
+		m.Components = make([]Component, 0)
 		component := Component{
 			Type:    componentType,
 			SubType: subType,
@@ -262,7 +228,7 @@ func (m *metaPayload) addComponent(componentType ComponentType, subType SubType,
 			component.Index = "0"
 		}
 
-		m.Template.Components = append(m.Template.Components, component)
+		m.Components = append(m.Components, component)
 	}
 
 	var exist bool //this is to check if the component exist
@@ -285,7 +251,7 @@ func (m *metaPayload) addComponent(componentType ComponentType, subType SubType,
 	//		}
 	//	  ]
 	//	}
-	for index, component := range m.Template.Components { // this is to check if the component exist, it iterates through the components to find the component
+	for index, component := range m.Components { // this is to check if the component exist, it iterates through the components to find the component
 		if component.Type == componentType { //if the component exists
 
 			if component.Type == ComponentTypeButton { //if the component is a button, it creates a new component with an index = (index + 1)
@@ -300,7 +266,7 @@ func (m *metaPayload) addComponent(componentType ComponentType, subType SubType,
 			}
 
 			exist = true //set exist to true
-			m.Template.Components[index].Parameters = append(m.Template.Components[index].Parameters,
+			m.Components[index].Parameters = append(m.Components[index].Parameters,
 				BuildParameter(parameterType, value)) //append the parameter to the component
 		}
 	}
@@ -329,10 +295,23 @@ func (m *metaPayload) addComponent(componentType ComponentType, subType SubType,
 			component.Index = "0"
 		}
 
-		m.Template.Components = append(m.Template.Components, component)
+		m.Components = append(m.Components, component)
 	}
 
 	return m
+}
+
+func (m Template) Byte() ([]byte, error) {
+	return json.Marshal(m)
+}
+
+func (m Template) String() (string, error) {
+	b, er := m.Byte()
+	if er != nil {
+		return "", er
+	}
+
+	return string(b), nil
 }
 
 func FromByteToMap(b []byte) (map[string]interface{}, error) {

@@ -1,13 +1,11 @@
-//source: https://developers.facebook.com/docs/whatsapp/cloud-api/support/error-codes
-
-package error_code
+// source: https://developers.facebook.com/docs/whatsapp/cloud-api/support/error-codes
+package errors
 
 type MetaError string
 
 func (e MetaError) Error() string {
 	return string(e)
 }
-
 
 const (
 
@@ -233,24 +231,52 @@ const (
 	ErrRequiredParameterIsMissing MetaError = "required parameter is missing"
 
 	// ErrParameterValueIsNotValid
+	//
+	// code 131009
+	//
+	// summary: The parameter value is not valid.
 	ErrParameterValueIsNotValid MetaError = "parameter value is not valid"
 
 	// ErrServiceUnavailable
+	//
+	// code 131016
+	//
+	// summary: The service is unavailable.
 	ErrServiceUnavailable MetaError = "service unavailable"
 
 	// ErrRecipientCannotBeSender
+	//
+	// code 131021
+	//
+	// summary: The recipient cannot be the sender.
 	ErrRecipientCannotBeSender MetaError = "recipient cannot be sender"
 
 	// ErrMessageUndeliverable
+	//
+	// code 131026
+	//
+	// summary: The message is undeliverable.
 	ErrMessageUndeliverable MetaError = "message undeliverable"
 
 	// ErrBusinessEligibilityPaymentIssue
+	//
+	// code 131042
+	//
+	// summary: The business is not eligible to send messages.
 	ErrBusinessEligibilityPaymentIssue MetaError = "business eligibility payment issue"
 
 	//ErrIncorrectCertificate
+	//
+	// code 131045
+	//
+	// summary: The certificate is incorrect.
 	ErrIncorrectCertificate MetaError = "incorrect certificate"
 
 	// ErrReEngagementMessage
+	//
+	// code 131047
+	//
+	// summary: The message is a re-engagement message.
 	ErrReEngagementMessage MetaError = "re-engagement message"
 
 	// ErrUnsupportedMessageType
@@ -458,4 +484,3 @@ func IsError(err error) bool {
 func (e MetaError) Code() int {
 	return errCodeMap[e]
 }
-
