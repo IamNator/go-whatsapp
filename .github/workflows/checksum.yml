@@ -1,0 +1,27 @@
+name: Checksum
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  checksum:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get release tag
+        id: get_tag
+        run: echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
+
+      - name: Get checksum
+        id: get_checksum
+        run: |
+          tag=$TAG
+          url="https://sum.golang.org/lookup/github.com/iamnator/go-whatsapp@$tag"
+          checksum=$(curl --silent $url)
+          echo "::set-output name=checksum::$checksum"
+        env:
+          TAG: ${{ steps.get_tag.outputs.tag }}
+
+      - name: Print checksum
+        run: |
+        echo "Checksum: ${{ steps.get_checksum.outputs.checksum }}"
