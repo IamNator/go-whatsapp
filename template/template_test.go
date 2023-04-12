@@ -39,9 +39,9 @@ func TestBytes(t *testing.T) {
 			To:           "+2349045057268",
 			Language:     template.EnglishUS,
 			Components: components{
-				Body: []string{"Ire", "8967", "15"},
+				Body: []string{"Ife", "8967", "15"},
 			},
-			Output: `{"messaging_product":"whatsapp","to":"2349045057268","type":"template","template":{"name":"signup_otp_1","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"Ire"},{"type":"text","text":"8967"},{"type":"text","text":"15"}]}]}}`,
+			Output: `{"messaging_product":"whatsapp","to":"2349045057268","type":"template","template":{"name":"signup_otp_1","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"Ife"},{"type":"text","text":"8967"},{"type":"text","text":"15"}]}]}}`,
 		},
 	}
 
