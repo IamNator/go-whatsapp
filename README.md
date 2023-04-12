@@ -8,7 +8,7 @@
 
 
 
-A Library for Sending out messages via templates on whatsapp business cloud API.
+This is a Go-Lang library that helps you send messages using pre-made templates on WhatsApp's business cloud platform.
 
 
 
