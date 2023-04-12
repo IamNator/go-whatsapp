@@ -76,17 +76,8 @@ type (
 	// subtypes of ComponentType e.g text, image, quick_reply, url etc
 	ParameterType string
 
-	LangCode string
 )
 
-const (
-	USLangCode LangCode = "en_US"
-	UKLangCode LangCode = "en_GB"
-)
-
-func (l LangCode) String() string {
-	return string(l)
-}
 
 const (
 	TypeText     PayloadType = "text"
@@ -149,7 +140,7 @@ func BuildParameter(parameterType ParameterType, value string) ParameterInterfac
 	panic("please help me")
 }
 
-func New(templateName, to, langCode string) *metaPayload {
+func New(templateName, to string, langCode LanguageCode) *metaPayload {
 	to = strings.Trim(to, "+")
 	return &metaPayload{
 		MessagingProduct: "whatsapp",
@@ -158,7 +149,7 @@ func New(templateName, to, langCode string) *metaPayload {
 		Template: &MetaPayloadTemplate{
 			Name: templateName,
 			Language: &Language{
-				Code: langCode,
+				Code: langCode.String(),
 			},
 		},
 	}
