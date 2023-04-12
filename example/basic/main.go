@@ -3,14 +3,15 @@ package main
 import (
 	"context"
 	"fmt"
+
 	whatsapp "github.com/iamNator/go-whatsapp"
 	"github.com/iamNator/go-whatsapp/template"
 )
 
 func main() {
-	whatsApp := whatsapp.New("metaAppId", "metaAppAccessToken", whatsapp.V14)
+	whatsApp := whatsapp.New("metaAppId", "metaAppAccessToken", whatsapp.V15)
 
-	data := template.New("templateName", "+2349045057268", "en_US")
+	data := template.New("templateName", "+2349045057268", template.EN_US)
 	data.AddHeader("header").
 		AddBody("body").
 		AddBody("body").
