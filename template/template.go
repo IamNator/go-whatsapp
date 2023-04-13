@@ -184,6 +184,8 @@ func (m Template) Done() Template {
 //	takes in a component_type, parameter_type and value
 //	and creates an array of components and parameters
 //
+//	-->in other words, it adds parameters
+//
 // [
 //
 //	{
@@ -208,11 +210,11 @@ func (m Template) Done() Template {
 // ]
 func (m *Template) addComponent(componentType ComponentType, subType SubType, parameterType ParameterType, value string) *Template {
 
-	// 1.  if component does not exist, create it
+	// 1.  if there are no components, create one i.e if len(m.Template.Components) < 1
 	// 2.  append the parameter to the component if it exists
-	// 3.  if component does not exist, create it and append the parameter to it
+	// 3.  if component does not exist among the already existing ones, create it and append the parameter to it
 
-	// if the component does not exist, it creates the component
+	// if there are no components, create one i.e if len(m.Template.Components) < 1
 	//
 	// {
 	//	"type": "<adds component_type>",  //creates the component e.g header, body, button
@@ -275,7 +277,7 @@ func (m *Template) addComponent(componentType ComponentType, subType SubType, pa
 		}
 	}
 
-	//   if the component does not exist, it creates the component and adds the parameter to it
+	//   if component does not exist among the already existing ones, create it and append the parameter to it
 	//	{
 	//	  "type": "<creates component_type>",
 	//    "sub_type": "<adds sub_type>",
