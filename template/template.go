@@ -10,10 +10,6 @@ import (
 //https://developers.facebook.com/docs/whatsapp/cloud-api/reference/messages/#template-messages
 
 type (
-	Language struct {
-		Code string `json:"code"`
-	}
-
 	// subtypes of ComponentType e.g text, image, quick_reply, url etc
 	ParameterType string
 
@@ -44,7 +40,7 @@ type (
 		Payload string        `json:"payload"`
 	}
 
-	ComponentType string
+	ComponentType string // e.g header, body, button etc
 
 	SubType string // e.g quick_reply, url etc
 
@@ -55,10 +51,15 @@ type (
 		SubType    SubType              `json:"sub_type,omitempty"` // e.g quick_reply, url etc
 		Index      string               `json:"index,omitempty"`    // e.g 0, 1, 2, 3 etc
 	}
+	
+	// Language ...
+	Language struct {
+		Code string `json:"code"` // e.g en_US, en_GB
+	}
 
 	// Template ...
 	Template struct {
-		Name       string      `json:"name"`
+		Name       string      `json:"name"` // The name of the whatsapp cloup api messaging template e.g signup_otp
 		Language   *Language   `json:"language"`
 		Components []Component `json:"components"`
 	}
