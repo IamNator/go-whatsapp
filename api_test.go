@@ -37,7 +37,7 @@ func TestSendText(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		m := &META{
+		m := &Client{
 			apiCaller: apiCaller,
 		}
 

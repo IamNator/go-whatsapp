@@ -2,14 +2,15 @@ package go_whatsapp
 
 import (
 	"context"
-	"github.com/iamNator/go-whatsapp/errors"
 	"os"
+
+	"github.com/iamNator/go-whatsapp/errors"
 
 	"github.com/iamNator/go-whatsapp/template"
 )
 
 type (
-	META struct {
+	Client struct {
 		phoneNumberID string
 		accessToken   string
 		baseURL       string
@@ -25,7 +26,7 @@ type (
 //	         "9484589000430090",
 //				"44NSNANSF094545nLKJGSJFSKF78985395495NKSJNFDJNSKFNSNJFNSDNFSDNFJNSDKFNSDJFNJSDNFJSD",
 //	         V14 )
-func New(phoneNumberID, metaAppAccessToken string, apiVersion MetaAPIVersion) *META {
+func New(phoneNumberID, metaAppAccessToken string, apiVersion MetaAPIVersion) *Client {
 
 	baseURL := "https://graph.facebook.com"
 
@@ -35,7 +36,7 @@ func New(phoneNumberID, metaAppAccessToken string, apiVersion MetaAPIVersion) *M
 
 	// 40 requests per second
 
-	return &META{
+	return &Client{
 		phoneNumberID: phoneNumberID,
 		accessToken:   metaAppAccessToken,
 		baseURL:       baseURL,
@@ -44,15 +45,15 @@ func New(phoneNumberID, metaAppAccessToken string, apiVersion MetaAPIVersion) *M
 	}
 }
 
-func (m *META) SetBaseURL(url string) {
+func (m *Client) SetBaseURL(url string) {
 	m.baseURL = url
 }
 
-func (m *META) SetApiVersion(apiVersion MetaAPIVersion) {
+func (m *Client) SetApiVersion(apiVersion MetaAPIVersion) {
 	m.apiVersion = apiVersion
 }
 
-func (m *META) SetApiCaller(apiCaller IApiCaller) {
+func (m *Client) SetApiCaller(apiCaller IApiCaller) {
 	m.apiCaller = apiCaller
 }
 
@@ -95,7 +96,7 @@ func (e APIError) Error() string {
 }
 
 // Send sends a message
-func (m *META) Send(ctx context.Context, msg RequestPayload) (*APIResponse, *APIError, error) {
+func (m *Client) Send(ctx context.Context, msg RequestPayload) (*APIResponse, *APIError, error) {
 
 	url := m.baseURL + "/" + m.apiVersion.String() + "/" + m.phoneNumberID + "/messages"
 	headers := map[string]string{
@@ -130,7 +131,7 @@ func (m *META) Send(ctx context.Context, msg RequestPayload) (*APIResponse, *API
 }
 
 // SendText sends a text message
-func (m *META) SendText(ctx context.Context, to string, text string) (*APIResponse, *APIError, error) {
+func (m *Client) SendText(ctx context.Context, to string, text string) (*APIResponse, *APIError, error) {
 
 	msg := NewPayloadWithText(to, text)
 
@@ -175,7 +176,7 @@ func (m *META) SendText(ctx context.Context, to string, text string) (*APIRespon
 // *APIError: error from the server
 //
 // error: error from the client
-func (m *META) SendTemplate(ctx context.Context, to string, tmpl template.Template) (*APIResponse, *APIError, error) {
+func (m *Client) SendTemplate(ctx context.Context, to string, tmpl template.Template) (*APIResponse, *APIError, error) {
 
 	msg := NewPayloadWithTemplate(to, tmpl)
 
