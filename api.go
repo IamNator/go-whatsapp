@@ -2,7 +2,6 @@ package go_whatsapp
 
 import (
 	"context"
-	"os"
 
 	"github.com/iamNator/go-whatsapp/errors"
 
@@ -14,8 +13,8 @@ type (
 		phoneNumberID string
 		accessToken   string
 		baseURL       string
-		apiVersion    MetaAPIVersion
-		apiCaller     IApiCaller
+		apiVersion    APIVersion
+		apiCaller     APICaller
 	}
 )
 
@@ -26,15 +25,9 @@ type (
 //	         "9484589000430090",
 //				"44NSNANSF094545nLKJGSJFSKF78985395495NKSJNFDJNSKFNSNJFNSDNFSDNFJNSDKFNSDJFNJSDNFJSD",
 //	         V14 )
-func New(phoneNumberID, metaAppAccessToken string, apiVersion MetaAPIVersion) *Client {
 
-	baseURL := "https://graph.facebook.com"
-
-	if baseU := os.Getenv("META_BASE_URL"); baseU != "" {
-		baseURL = baseU
-	}
-
-	// 40 requests per second
+func New(phoneNumberID, metaAppAccessToken string, apiVersion APIVersion) *Client {
+	const baseURL = "https://graph.facebook.com"
 
 	return &Client{
 		phoneNumberID: phoneNumberID,
@@ -49,17 +42,20 @@ func (m *Client) SetBaseURL(url string) {
 	m.baseURL = url
 }
 
-func (m *Client) SetApiVersion(apiVersion MetaAPIVersion) {
+func (m *Client) SetApiVersion(apiVersion APIVersion) {
 	m.apiVersion = apiVersion
 }
 
-func (m *Client) SetApiCaller(apiCaller IApiCaller) {
+func (m *Client) SetApiCaller(apiCaller APICaller) {
 	m.apiCaller = apiCaller
 }
 
 type (
+	APIErrorData struct {
+		Details          string `json:"details"`
+		MessagingProduct string `json:"messaging_product"`
+	}
 
-	//WhatsappOutputError ..
 	APIError struct {
 		Message      string       `json:"message"`
 		Type         string       `json:"type"`
@@ -67,11 +63,6 @@ type (
 		ErrorData    APIErrorData `json:"error_data"`
 		ErrorSubCode uint         `json:"error_subcode"`
 		FBTraceID    string       `json:"fbtrace_id"`
-	}
-
-	APIErrorData struct {
-		Details          string `json:"details"`
-		MessagingProduct string `json:"messaging_product"`
 	}
 
 	APIResponseContact struct {
@@ -135,7 +126,7 @@ func (m *Client) SendText(ctx context.Context, to string, text string) (*APIResp
 
 	msg := NewAPIRequestWithText(to, text)
 
-	return m.Send(ctx, *msg)
+	return m.Send(ctx, msg)
 }
 
 // SendTemplate sends a template message
@@ -151,7 +142,5 @@ func (m *Client) SendTemplate(ctx context.Context, to string, tmpl template.Temp
 
 	msg := NewAPIRequestWithTemplate(to, tmpl)
 
-	return m.Send(ctx, *msg)
+	return m.Send(ctx, msg)
 }
-
-// ------------------------------------------------  REST CALLS -------------------------------
