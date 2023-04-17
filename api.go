@@ -21,10 +21,9 @@ type (
 // New
 //
 // e.g  _meta := New(
-//
-//	         "9484589000430090",
-//				"44NSNANSF094545nLKJGSJFSKF78985395495NKSJNFDJNSKFNSNJFNSDNFSDNFJNSDKFNSDJFNJSDNFJSD",
-//	         V14 )
+//	         "9414589060430990",
+//				"44NSNAUSF094545nLKIGSJFSKF78985395495NKSJNFDJNS0FNSNJFNSDNFSDNFJNSDKFKSDJFNJSDNFJSD",
+//	         V16 )
 
 func New(phoneNumberID, metaAppAccessToken string, apiVersion APIVersion) *Client {
 	const baseURL = "https://graph.facebook.com"

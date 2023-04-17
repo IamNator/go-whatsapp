@@ -28,6 +28,8 @@ const (
 
 	V15 APIVersion = "v15.0" // 2022
 	V16 APIVersion = "v16.0" // 2023
+	V17 APIVersion = "v17.0" // reserved
+	V18 APIVersion = "v18.0" // reserved
 )
 
 func (m APIVersion) String() string {
