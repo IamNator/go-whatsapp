@@ -1,15 +1,17 @@
-package go_whatsapp
+package go_whatsapp_test
 
 import (
 	"context"
 	"testing"
+
+	whatsapp "github.com/iamNator/go-whatsapp/v2"
 )
 
 type testApiCaller struct {
-	network map[string]APIResponse
+	network map[string]whatsapp.APIResponse
 }
 
-func (m *testApiCaller) Post(url string, data []byte, headers map[string]string) (*APIResponse, int, error) {
+func (m *testApiCaller) Post(url string, data []byte, headers map[string]string) (*whatsapp.APIResponse, int, error) {
 	response := m.network[url+string(data)]
 	return &response, 200, nil
 }
@@ -22,24 +24,23 @@ func TestSendText(t *testing.T) {
 	tt := []struct {
 		to       string
 		text     string
-		response *APIResponse
+		response *whatsapp.APIResponse
 	}{
 		{
 			to:       "123456789",
 			text:     "hello world",
-			response: &APIResponse{},
+			response: &whatsapp.APIResponse{},
 		},
 		{
 			to:       "123456789",
 			text:     "hello world",
-			response: &APIResponse{},
+			response: &whatsapp.APIResponse{},
 		},
 	}
 
 	for _, tc := range tt {
-		m := &Client{
-			apiCaller: apiCaller,
-		}
+		m := &whatsapp.Client{}
+		m.SetApiCaller(apiCaller)
 
 		_, _, err := m.SendText(context.TODO(), tc.to, tc.text)
 		if err != nil {

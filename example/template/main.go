@@ -5,8 +5,8 @@
 //	"context"
 //	"fmt"
 //
-//	whatsapp "github.com/iamNator/go-whatsapp"
-//	"github.com/iamNator/go-whatsapp/template"
+//	whatsapp "github.com/iamNator/go-whatsapp/v2"
+//	"github.com/iamNator/go-whatsapp/v2/template"
 //)
 //
 //func main() {
@@ -42,8 +42,8 @@ import (
 	"context"
 	"fmt"
 
-	whatsapp "github.com/iamNator/go-whatsapp"
-	"github.com/iamNator/go-whatsapp/template"
+	whatsapp "github.com/iamNator/go-whatsapp/v2"
+	"github.com/iamNator/go-whatsapp/v2/template"
 )
 
 func main() {
