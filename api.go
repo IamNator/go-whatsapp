@@ -71,13 +71,13 @@ type (
 	}
 
 	APIResponseMessage struct {
-		ID string `json:"id"`
+		ID string `json:"id"` 
 	}
 
 	APIResponse struct {
 		Error            APIError             `json:"error"`
-		MessagingProduct string               `json:"messaging_product"`
-		Contacts         []APIResponseContact `json:"contacts"`
+		MessagingProduct string               `json:"messaging_product"` // e.g whatsapp
+		Contacts         []APIResponseContact `json:"contacts"` 
 		Messages         []APIResponseMessage `json:"messages"`
 	}
 )
@@ -94,7 +94,7 @@ func (m *Client) Send(ctx context.Context, msg APIRequest) (*APIResponse, *APIEr
 		"Authorization": "Bearer " + m.accessToken,
 	}
 
-	//convert to json
+	//convert to bytes
 	data, er := msg.Byte()
 	if er != nil {
 		return nil, nil, er
@@ -124,7 +124,7 @@ func (m *Client) Send(ctx context.Context, msg APIRequest) (*APIResponse, *APIEr
 // SendText sends a text message
 func (m *Client) SendText(ctx context.Context, to string, text string) (*APIResponse, *APIError, error) {
 
-	msg := NewAPIRequestWithText(to, text)
+	msg := NewAPIRequestWithText(to, text) // create an api request payload with text
 
 	return m.Send(ctx, msg)
 }
@@ -140,7 +140,7 @@ func (m *Client) SendText(ctx context.Context, to string, text string) (*APIResp
 // error: error from the client
 func (m *Client) SendTemplate(ctx context.Context, to string, tmpl template.Template) (*APIResponse, *APIError, error) {
 
-	msg := NewAPIRequestWithTemplate(to, tmpl)
+	msg := NewAPIRequestWithTemplate(to, tmpl) // create an api request payload with template
 
 	return m.Send(ctx, msg)
 }
