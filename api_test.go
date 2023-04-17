@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	whatsapp "github.com/iamNator/go-whatsapp/v2"
+	whatsapp "github.com/IamNator/go-whatsapp/v2"
 )
 
 type testApiCaller struct {
