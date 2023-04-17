@@ -31,7 +31,7 @@ const (
 	whatsApp = "whatsapp"
 )
 
-func (m *APIRequest) Byte() ([]byte, error) {
+func (m APIRequest) Byte() ([]byte, error) {
 	return json.Marshal(m)
 }
 
@@ -40,9 +40,9 @@ func removeLeadingPlusSign(s string) string {
 }
 
 // Deprecated
-func NewAPIRequest(templateName, to string, langCode template.LanguageCode) *APIRequest {
+func NewAPIRequest(templateName, to string, langCode template.LanguageCode) APIRequest {
 
-	return &APIRequest{
+	return APIRequest{
 		MessagingProduct: whatsApp,
 		To:               removeLeadingPlusSign(to),
 		Type:             TypeTemplate,
@@ -50,8 +50,8 @@ func NewAPIRequest(templateName, to string, langCode template.LanguageCode) *API
 	}
 }
 
-func NewAPIRequestWithText(to, text string) *APIRequest {
-	return &APIRequest{
+func NewAPIRequestWithText(to, text string) APIRequest {
+	return APIRequest{
 		MessagingProduct: whatsApp,
 		To:               removeLeadingPlusSign(to),
 		Type:             TypeText,
@@ -61,8 +61,8 @@ func NewAPIRequestWithText(to, text string) *APIRequest {
 	}
 }
 
-func NewAPIRequestWithTemplate(to string, tmpl template.Template) *APIRequest {
-	return &APIRequest{
+func NewAPIRequestWithTemplate(to string, tmpl template.Template) APIRequest {
+	return APIRequest{
 		MessagingProduct: whatsApp,
 		To:               removeLeadingPlusSign(to),
 		Type:             TypeTemplate,
