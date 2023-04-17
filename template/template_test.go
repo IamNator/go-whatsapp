@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/iamNator/go-whatsapp/v2/template"
+	"github.com/IamNator/go-whatsapp/v2/template"
 )
 
 type (

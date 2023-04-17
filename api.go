@@ -3,9 +3,9 @@ package go_whatsapp
 import (
 	"context"
 
-	"github.com/iamNator/go-whatsapp/v2/errors"
+	"github.com/IamNator/go-whatsapp/v2/errors"
 
-	"github.com/iamNator/go-whatsapp/v2/template"
+	"github.com/IamNator/go-whatsapp/v2/template"
 )
 
 type (

@@ -42,8 +42,8 @@ import (
 	"context"
 	"fmt"
 
-	whatsapp "github.com/iamNator/go-whatsapp/v2"
-	"github.com/iamNator/go-whatsapp/v2/template"
+	whatsapp "github.com/IamNator/go-whatsapp/v2"
+	"github.com/IamNator/go-whatsapp/v2/template"
 )
 
 func main() {
