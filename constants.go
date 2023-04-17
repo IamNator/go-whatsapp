@@ -19,17 +19,17 @@ const (
 // ---------------------------------------- API VERSION  ------
 
 type (
-	MetaAPIVersion string
+	APIVersion string
 )
 
 const (
-	V13 MetaAPIVersion = "v13.0"
-	V14 MetaAPIVersion = "v14.0"
+	V13 APIVersion = "v13.0"
+	V14 APIVersion = "v14.0"
 
-	V15 MetaAPIVersion = "v15.0" // 2022
-	V16 MetaAPIVersion = "v16.0" // 2023
+	V15 APIVersion = "v15.0" // 2022
+	V16 APIVersion = "v16.0" // 2023
 )
 
-func (m MetaAPIVersion) String() string {
+func (m APIVersion) String() string {
 	return string(m)
 }

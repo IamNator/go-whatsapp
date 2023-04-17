@@ -51,7 +51,7 @@ type (
 		SubType    SubType              `json:"sub_type,omitempty"` // e.g quick_reply, url etc
 		Index      string               `json:"index,omitempty"`    // e.g 0, 1, 2, 3 etc
 	}
-	
+
 	// Language ...
 	Language struct {
 		Code string `json:"code"` // e.g en_US, en_GB

@@ -2,19 +2,19 @@ package go_whatsapp
 
 import (
 	"context"
+
 	"github.com/iamNator/go-whatsapp/errors"
-	"os"
 
 	"github.com/iamNator/go-whatsapp/template"
 )
 
 type (
-	META struct {
+	Client struct {
 		phoneNumberID string
 		accessToken   string
 		baseURL       string
-		apiVersion    MetaAPIVersion
-		apiCaller     IApiCaller
+		apiVersion    APIVersion
+		apiCaller     APICaller
 	}
 )
 
@@ -25,17 +25,11 @@ type (
 //	         "9484589000430090",
 //				"44NSNANSF094545nLKJGSJFSKF78985395495NKSJNFDJNSKFNSNJFNSDNFSDNFJNSDKFNSDJFNJSDNFJSD",
 //	         V14 )
-func New(phoneNumberID, metaAppAccessToken string, apiVersion MetaAPIVersion) *META {
 
-	baseURL := "https://graph.facebook.com"
+func New(phoneNumberID, metaAppAccessToken string, apiVersion APIVersion) *Client {
+	const baseURL = "https://graph.facebook.com"
 
-	if baseU := os.Getenv("META_BASE_URL"); baseU != "" {
-		baseURL = baseU
-	}
-
-	// 40 requests per second
-
-	return &META{
+	return &Client{
 		phoneNumberID: phoneNumberID,
 		accessToken:   metaAppAccessToken,
 		baseURL:       baseURL,
@@ -44,21 +38,24 @@ func New(phoneNumberID, metaAppAccessToken string, apiVersion MetaAPIVersion) *M
 	}
 }
 
-func (m *META) SetBaseURL(url string) {
+func (m *Client) SetBaseURL(url string) {
 	m.baseURL = url
 }
 
-func (m *META) SetApiVersion(apiVersion MetaAPIVersion) {
+func (m *Client) SetApiVersion(apiVersion APIVersion) {
 	m.apiVersion = apiVersion
 }
 
-func (m *META) SetApiCaller(apiCaller IApiCaller) {
+func (m *Client) SetApiCaller(apiCaller APICaller) {
 	m.apiCaller = apiCaller
 }
 
 type (
+	APIErrorData struct {
+		Details          string `json:"details"`
+		MessagingProduct string `json:"messaging_product"`
+	}
 
-	//WhatsappOutputError ..
 	APIError struct {
 		Message      string       `json:"message"`
 		Type         string       `json:"type"`
@@ -66,11 +63,6 @@ type (
 		ErrorData    APIErrorData `json:"error_data"`
 		ErrorSubCode uint         `json:"error_subcode"`
 		FBTraceID    string       `json:"fbtrace_id"`
-	}
-
-	APIErrorData struct {
-		Details          string `json:"details"`
-		MessagingProduct string `json:"messaging_product"`
 	}
 
 	APIResponseContact struct {
@@ -95,7 +87,7 @@ func (e APIError) Error() string {
 }
 
 // Send sends a message
-func (m *META) Send(ctx context.Context, msg RequestPayload) (*APIResponse, *APIError, error) {
+func (m *Client) Send(ctx context.Context, msg APIRequest) (*APIResponse, *APIError, error) {
 
 	url := m.baseURL + "/" + m.apiVersion.String() + "/" + m.phoneNumberID + "/messages"
 	headers := map[string]string{
@@ -130,40 +122,11 @@ func (m *META) Send(ctx context.Context, msg RequestPayload) (*APIResponse, *API
 }
 
 // SendText sends a text message
-func (m *META) SendText(ctx context.Context, to string, text string) (*APIResponse, *APIError, error) {
+func (m *Client) SendText(ctx context.Context, to string, text string) (*APIResponse, *APIError, error) {
 
-	msg := NewPayloadWithText(to, text)
+	msg := NewAPIRequestWithText(to, text)
 
-	url := m.baseURL + "/" + m.apiVersion.String() + "/" + m.phoneNumberID + "/messages"
-	headers := map[string]string{
-		"Authorization": "Bearer " + m.accessToken,
-	}
-
-	//convert to json
-	data, er := msg.Byte()
-	if er != nil {
-		return nil, nil, er
-	}
-
-	output, statusCode, er := m.apiCaller.Post(
-		url,
-		data,
-		headers)
-	if er != nil {
-		return nil, nil, er
-	}
-
-	//check for error
-	if errors.IsErrorCode(output.Error.Code, statusCode) {
-		return nil, &output.Error, nil
-	}
-
-	//check for error
-	if output.Error.ErrorSubCode != 0 {
-		return nil, &output.Error, nil
-	}
-
-	return output, nil, nil
+	return m.Send(ctx, msg)
 }
 
 // SendTemplate sends a template message
@@ -175,35 +138,9 @@ func (m *META) SendText(ctx context.Context, to string, text string) (*APIRespon
 // *APIError: error from the server
 //
 // error: error from the client
-func (m *META) SendTemplate(ctx context.Context, to string, tmpl template.Template) (*APIResponse, *APIError, error) {
+func (m *Client) SendTemplate(ctx context.Context, to string, tmpl template.Template) (*APIResponse, *APIError, error) {
 
-	msg := NewPayloadWithTemplate(to, tmpl)
+	msg := NewAPIRequestWithTemplate(to, tmpl)
 
-	url := m.baseURL + "/" + m.apiVersion.String() + "/" + m.phoneNumberID + "/messages"
-	headers := map[string]string{
-		"Authorization": "Bearer " + m.accessToken,
-	}
-
-	//convert to json
-	data, er := msg.Byte()
-	if er != nil {
-		return nil, nil, er
-	}
-
-	output, statusCode, er := m.apiCaller.Post(
-		url,
-		data,
-		headers)
-	if er != nil {
-		return nil, nil, er
-	}
-
-	//check for error
-	if errors.IsErrorCode(output.Error.Code, statusCode) {
-		return nil, &output.Error, nil
-	}
-
-	return output, nil, nil
+	return m.Send(ctx, msg)
 }
-
-// ------------------------------------------------  REST CALLS -------------------------------
