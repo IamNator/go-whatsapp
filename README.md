@@ -14,20 +14,21 @@ This is a Go-Lang library that helps you send messages using pre-made templates 
 
 ### Send message using pre-made templates
 ````
+
 package main
 
 import (
 	"context"
 	"fmt"
 
-	whatsapp "github.com/iamNator/go-whatsapp/v2"
-	"github.com/iamNator/go-whatsapp/v2/template"
+	whatsapp "github.com/IamNator/go-whatsapp/v3"
+	"github.com/IamNator/go-whatsapp/v3/template"
 )
 
 func main() {
-	client := whatsapp.New("metaAppId", "metaAppAccessToken", whatsapp.V15)
 
-	// prepare the payload
+	// create a new client
+	client := whatsapp.New("phoneNumberID", "appAccessToken", whatsapp.WithApiVersion(whatsapp.V15))
 
 	//build the template
 	tmpl := template.New("templateName", template.EN_US).AddHeader("header").
@@ -36,15 +37,18 @@ func main() {
 		AddBody("body").
 		Done()
 
+	recipient := "2349045057268"
+
 	// send the request
-	response, errResponse, er := client.SendTemplate(context.Background(), "2349045057268", tmpl)
+	response, er := client.SendTemplate(context.Background(), recipient, tmpl)
 	if er != nil {
 		fmt.Println("error: ", er.Error())
 		return
 	}
 
-	fmt.Println("Err: ", errResponse, "\nResponse: ", response)
+	fmt.Println("Response: ", response)
 }
+
 
 
 ````
@@ -59,20 +63,30 @@ import (
 	"context"
 	"fmt"
 
-	whatsapp "github.com/iamNator/go-whatsapp/v2"
+	whatsapp "github.com/IamNator/go-whatsapp/v3"
 )
 
 func main() {
-	client := whatsapp.New("metaAppId", "metaAppAccessToken", whatsapp.V15)
+	client := whatsapp.New("phoneNumberID", "appAccessToken", whatsapp.WithApiVersion(whatsapp.V15))
+
+	recipients := "2349045057268"
+	text := "Hello World"
 
 	// send the request
-	response, errResponse, er := client.SendText(context.Background(), "2349045057268", "Hello World")
+	response, er := client.SendText(context.Background(), recipients, text)
 	if er != nil {
 		fmt.Println("error: ", er.Error())
 		return
 	}
 
-	fmt.Println("Err: ", errResponse, "\nResponse: ", response)
+	// check the response for errors
+	if response.Error != nil {
+		fmt.Println("error: ", response.Error.Error())
+		return
+	}
+
+	fmt.Println("Response: ", response)
 }
+
 
 ```
