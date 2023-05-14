@@ -1,30 +1,29 @@
-//
-//package main
-//
-//import (
-//	"context"
-//	"fmt"
-//
-//	whatsapp "github.com/iamNator/go-whatsapp"
-//)
-//
-//func main() {
-//	client := whatsapp.New("metaAppId", "metaAppAccessToken", whatsapp.V15)
-//
-//	// send the request
-//	response, errResponse, er := client.SendText(context.Background(), "2349045057268", "Hello World")
-//	if er != nil {
-//		fmt.Println("error: ", er.Error())
-//		return
-//	}
-//
-//	if errResponse != nil {
-//		fmt.Println("ErrorResponse: ", errResponse.Message)
-//		return
-//	}
-//
-//	fmt.Println("Response: ", response)
-//}
+/*
+package main
+
+import (
+	"context"
+	"fmt"
+
+	whatsapp "github.com/IamNator/go-whatsapp/v3"
+)
+
+func main() {
+	client := whatsapp.New("phoneNumberID", "appAccessToken", whatsapp.WithApiVersion(whatsapp.V15))
+
+	recipients := "2349045057268"
+	text := "Hello World"
+
+	// send the request
+	response, er := client.SendText(context.Background(), recipients, text)
+	if er != nil {
+		fmt.Println("error: ", er.Error())
+		return
+	}
+
+	fmt.Println("Response: ", response)
+}
+*/
 
 package main
 
@@ -32,22 +31,25 @@ import (
 	"context"
 	"fmt"
 
-	
-	whatsapp "github.com/IamNator/go-whatsapp/v2"
+	whatsapp "github.com/IamNator/go-whatsapp/v3"
 )
 
 func main() {
-	client := whatsapp.New("metaAppId", "metaAppAccessToken", whatsapp.V15)
+	client := whatsapp.New("phoneNumberID", "appAccessToken", whatsapp.WithApiVersion(whatsapp.V15))
+
+	recipients := "2349045057268"
+	text := "Hello World"
 
 	// send the request
-	response, errResponse, er := client.SendText(context.Background(), "2349045057268", "Hello World")
+	response, er := client.SendText(context.Background(), recipients, text)
 	if er != nil {
 		fmt.Println("error: ", er.Error())
 		return
 	}
 
-	if errResponse != nil {
-		fmt.Println("ErrorResponse: ", errResponse.Message)
+	// check the response for errors
+	if response.Error != nil {
+		fmt.Println("error: ", response.Error.Error())
 		return
 	}
 

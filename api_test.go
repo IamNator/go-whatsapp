@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	whatsapp "github.com/IamNator/go-whatsapp/v2"
+	whatsapp "github.com/IamNator/go-whatsapp/v3"
 )
 
 type testApiCaller struct {
@@ -42,7 +42,7 @@ func TestSendText(t *testing.T) {
 		m := &whatsapp.Client{}
 		m.SetApiCaller(apiCaller)
 
-		_, _, err := m.SendText(context.TODO(), tc.to, tc.text)
+		_, err := m.SendText(context.TODO(), tc.to, tc.text)
 		if err != nil {
 			t.Errorf("error: %v", err)
 		}
