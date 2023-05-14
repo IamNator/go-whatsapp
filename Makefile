@@ -8,3 +8,6 @@ example-template:
 
 format:
 	goimports-reviser -rm-unused -use-cache -set-alias -format ./...
+
+test:
+	go test -v ./...
