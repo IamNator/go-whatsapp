@@ -148,34 +148,44 @@ func CleanText(s string) string {
 
 	return s
 }
+
+// AddHeader specifies a header text component for the WhatsApp template content.
+// Note: The order of adding components is important as it determines their position within the template.
 func (m *Template) AddHeader(text string) *Template {
 	return m.addComponent(ComponentTypeHeader, SubTypeNone, ParameterTypeText, CleanText(text))
 }
 
+// AddHeaderImage specifies a header image component for the WhatsApp template content.
+// Note: The order of adding components is important as it determines their position within the template.
 func (m *Template) AddHeaderImage(imageLink string) *Template {
 	return m.addComponent(ComponentTypeHeader, SubTypeNone, ParameterTypeImage, CleanText(imageLink))
 }
 
-func (m *Template) AddImage(imageLink string) *Template {
-	return m.addComponent(ComponentTypeHeader, SubTypeNone, ParameterTypeImage, CleanText(imageLink))
-}
-
+// AddBody specifies a body text component for the WhatsApp template content.
+// Note: The order of adding components is important as it determines their position within the template.
 func (m *Template) AddBody(text string) *Template {
 	return m.addComponent(ComponentTypeBody, SubTypeNone, ParameterTypeText, CleanText(text))
 }
 
+// AddButton specifies a button text component for the WhatsApp template content.
+// Note: The order of adding components is important as it determines their position within the template.
 func (m *Template) AddButton(text string) *Template {
 	return m.addComponent(ComponentTypeButton, SubTypeNone, ParameterTypeText, CleanText(text))
 }
 
+// AddButtonURL specifies a button URL component for the WhatsApp template content.
+// Note: The order of adding components is important as it determines their position within the template.
 func (m *Template) AddButtonURL(link string) *Template {
 	return m.addComponent(ComponentTypeButton, SubTypeTypeUrl, ParameterTypeText, CleanText(link))
 }
 
+// AddButtonQuickReply specifies a button quick reply component for the WhatsApp template content.
+// Note: The order of adding components is important as it determines their position within the template.
 func (m *Template) AddButtonQuickReply(text string) *Template {
 	return m.addComponent(ComponentTypeButton, SubTypeQuickReply, ParameterTypeButtonPayload, CleanText(text))
 }
 
+// Done returns the final WhatsApp template content.
 func (m Template) Done() Template {
 	return m
 }

@@ -3,9 +3,8 @@ package go_whatsapp
 import (
 	"context"
 
-	"github.com/IamNator/go-whatsapp/v2/errors"
-
-	"github.com/IamNator/go-whatsapp/v2/template"
+	"github.com/IamNator/go-whatsapp/v3/errors"
+	"github.com/IamNator/go-whatsapp/v3/template"
 )
 
 type (
@@ -15,26 +14,64 @@ type (
 		baseURL       string
 		apiVersion    APIVersion
 		apiCaller     APICaller
+		debug         bool
 	}
 )
 
-// New
-//
-// e.g  _meta := New(
-//	         "9414589060430990",
-//				"44NSNAUSF094545nLKIGSJFSKF78985395495NKSJNFDJNS0FNSNJFNSDNFSDNFJNSDKFKSDJFNJSDNFJSD",
-//	         V16 )
+type Opt func(*Client)
 
-func New(phoneNumberID, metaAppAccessToken string, apiVersion APIVersion) *Client {
+// WithBaseURL sets the base url
+func WithBaseURL(url string) Opt {
+	return func(m *Client) {
+		m.baseURL = url
+	}
+}
+
+// WithApiVersion sets the api version
+func WithApiVersion(apiVersion APIVersion) Opt {
+	return func(m *Client) {
+		m.apiVersion = apiVersion
+	}
+}
+
+// WithApiCaller sets the api caller
+func WithApiCaller(apiCaller APICaller) Opt {
+	return func(m *Client) {
+		m.apiCaller = apiCaller
+	}
+}
+
+// New returns a new instance of the Client
+//
+// e.g  client := New(
+//
+//	         "9414589060430990",
+//			 "44NSNAUSF094545nLKIGSJFSKF78985395495NKSJNFDJNS0FNSNJFNSDNFSDNFJNSDKFKSDJFNJSDNFJSD",
+//	         WithApiVersion(V16), WithBaseURL("https://graph.facebook.com") )
+//
+//	phoneNumberID: the phone number id
+//	appAccessToken: the app access token
+//	opts: the options
+//
+// by default, the api version is V16
+// and the base url is https://graph.facebook.com
+func New(phoneNumberID, appAccessToken string, opts ...Opt) *Client {
+
 	const baseURL = "https://graph.facebook.com"
 
-	return &Client{
+	m := &Client{
 		phoneNumberID: phoneNumberID,
-		accessToken:   metaAppAccessToken,
+		accessToken:   appAccessToken,
 		baseURL:       baseURL,
-		apiVersion:    apiVersion,
+		apiVersion:    V16,
 		apiCaller:     &apiCaller{}, // default
 	}
+
+	for _, opt := range opts {
+		opt(m)
+	}
+
+	return m
 }
 
 func (m *Client) SetBaseURL(url string) {
@@ -60,7 +97,7 @@ type (
 		Type         string       `json:"type"`
 		Code         int          `json:"code"`
 		ErrorData    APIErrorData `json:"error_data"`
-		ErrorSubCode uint         `json:"error_subcode"`
+		ErrorSubCode int          `json:"error_subcode"`
 		FBTraceID    string       `json:"fbtrace_id"`
 	}
 
@@ -70,13 +107,13 @@ type (
 	}
 
 	APIResponseMessage struct {
-		ID string `json:"id"` 
+		ID string `json:"id"`
 	}
 
 	APIResponse struct {
-		Error            APIError             `json:"error"`
+		Error            *APIError            `json:"error"`
 		MessagingProduct string               `json:"messaging_product"` // e.g whatsapp
-		Contacts         []APIResponseContact `json:"contacts"` 
+		Contacts         []APIResponseContact `json:"contacts"`
 		Messages         []APIResponseMessage `json:"messages"`
 	}
 )
@@ -86,7 +123,7 @@ func (e APIError) Error() string {
 }
 
 // Send sends a message
-func (m *Client) Send(ctx context.Context, msg APIRequest) (*APIResponse, *APIError, error) {
+func (m *Client) Send(ctx context.Context, msg APIRequest) (*APIResponse, error) {
 
 	url := m.baseURL + "/" + m.apiVersion.String() + "/" + m.phoneNumberID + "/messages"
 	headers := map[string]string{
@@ -96,32 +133,22 @@ func (m *Client) Send(ctx context.Context, msg APIRequest) (*APIResponse, *APIEr
 	//convert to bytes
 	data, er := msg.Byte()
 	if er != nil {
-		return nil, nil, er
+		return nil, er
 	}
 
-	output, statusCode, er := m.apiCaller.Post(
+	output, _, er := m.apiCaller.Post(
 		url,
 		data,
 		headers)
 	if er != nil {
-		return nil, nil, er
+		return nil, er
 	}
 
-	//check for error
-	if errors.IsErrorCode(output.Error.Code, statusCode) {
-		return nil, &output.Error, nil
-	}
-
-	//check for error
-	if output.Error.ErrorSubCode != 0 {
-		return nil, &output.Error, nil
-	}
-
-	return output, nil, nil
+	return output, nil
 }
 
 // SendText sends a text message
-func (m *Client) SendText(ctx context.Context, to string, text string) (*APIResponse, *APIError, error) {
+func (m *Client) SendText(ctx context.Context, to string, text string) (*APIResponse, error) {
 
 	msg := NewAPIRequestWithText(to, text) // create an api request payload with text
 
@@ -137,7 +164,7 @@ func (m *Client) SendText(ctx context.Context, to string, text string) (*APIResp
 // *APIError: error from the server
 //
 // error: error from the client
-func (m *Client) SendTemplate(ctx context.Context, to string, tmpl template.Template) (*APIResponse, *APIError, error) {
+func (m *Client) SendTemplate(ctx context.Context, to string, tmpl template.Template) (*APIResponse, error) {
 
 	msg := NewAPIRequestWithTemplate(to, tmpl) // create an api request payload with template
 

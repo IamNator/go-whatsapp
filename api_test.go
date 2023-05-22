@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	whatsapp "github.com/IamNator/go-whatsapp/v2"
+	whatsapp "github.com/IamNator/go-whatsapp/v3"
 )
 
 type testApiCaller struct {
@@ -17,11 +17,12 @@ func (m *testApiCaller) Post(url string, data []byte, headers map[string]string)
 }
 
 // TODO: write better tests
-func TestSendText(t *testing.T) {
 
+// TestSendText tests the SendText function of the WhatsApp client.
+func TestSendText(t *testing.T) {
 	apiCaller := &testApiCaller{}
 
-	tt := []struct {
+	testCases := []struct {
 		to       string
 		text     string
 		response *whatsapp.APIResponse
@@ -32,19 +33,19 @@ func TestSendText(t *testing.T) {
 			response: &whatsapp.APIResponse{},
 		},
 		{
-			to:       "123456789",
-			text:     "hello world",
+			to:       "987654321",
+			text:     "how are you?",
 			response: &whatsapp.APIResponse{},
 		},
 	}
 
-	for _, tc := range tt {
-		m := &whatsapp.Client{}
-		m.SetApiCaller(apiCaller)
+	for _, tc := range testCases {
+		whatsappClient := &whatsapp.Client{}
+		whatsappClient.SetApiCaller(apiCaller)
 
-		_, _, err := m.SendText(context.TODO(), tc.to, tc.text)
+		_, err := whatsappClient.SendText(context.TODO(), tc.to, tc.text)
 		if err != nil {
-			t.Errorf("error: %v", err)
+			t.Errorf("Failed to send text message: %v", err)
 		}
 	}
 }

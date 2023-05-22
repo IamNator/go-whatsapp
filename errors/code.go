@@ -488,20 +488,6 @@ func IsError(err error) bool {
 	return ok
 }
 
-func IsErrorCode(code int, statusCode int) bool {
-
-	if code == 0 && statusCode == 403 {
-		return true
-	}
-
-	_, ok := codeErrorMap[code]
-	if ok {
-		return true
-	}
-
-	return false
-}
-
 // Code returns the error code.
 func (e MetaError) Code() int {
 	return errCodeMap[e]
