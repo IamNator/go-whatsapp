@@ -18,18 +18,12 @@ type apiCaller struct {
 }
 
 func (m *apiCaller) Post(url string, body []byte, headers map[string]string) (*APIResponse, int, error) {
-	addBearerToken(headers, headers["Authorization"])      // add bearer token to headers
 	var response APIResponse                               // create a response object
 	statusCode, err := post(url, body, headers, &response) // make the post request
 	if err != nil {
 		return nil, statusCode, err // return the error
 	}
 	return &response, statusCode, nil // return the response object and the error
-}
-
-// addBearerToken adds the bearer token to the headers
-func addBearerToken(headers map[string]string, token string) {
-	headers["Authorization"] = "Bearer " + token
 }
 
 // attachHeaders attaches the headers to the request
@@ -47,8 +41,6 @@ func post(url string, body []byte, headers map[string]string, response interface
 		return http.StatusBadRequest, err
 	}
 
-	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Authorization", "Bearer "+headers["Authorization"])
 	attachHeaders(request, headers)
 
 	client := http.DefaultClient
