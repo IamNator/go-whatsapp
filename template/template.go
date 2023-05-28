@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"errors"
 )
 
 //https://developers.facebook.com/docs/whatsapp/cloud-api/reference/messages/#template-messages
@@ -46,10 +48,10 @@ type (
 
 	// Component ...
 	Component struct {
-		Type       ComponentType        `json:"type"` // e.g header, body, button etc
-		Parameters []ParameterInterface `json:"parameters"`
-		SubType    SubType              `json:"sub_type,omitempty"` // e.g quick_reply, url etc
-		Index      string               `json:"index,omitempty"`    // e.g 0, 1, 2, 3 etc
+		Type       ComponentType           `json:"type"` // e.g header, body, button etc
+		Parameters ParameterInterfaceSlice `json:"parameters"`
+		SubType    SubType                 `json:"sub_type,omitempty"` // e.g quick_reply, url etc
+		Index      string                  `json:"index,omitempty"`    // e.g 0, 1, 2, 3 etc
 	}
 
 	// Language ...
@@ -85,7 +87,69 @@ type (
 	ParameterInterface interface {
 		Build(value string)
 	}
+
+	ParameterInterfaceSlice []ParameterInterface
 )
+
+func (p ParameterInterfaceSlice) Len() int {
+	return len(p)
+}
+func (p *ParameterInterfaceSlice) UnmarshalJSON(b []byte) error {
+	data := make([]json.RawMessage, 0)
+	if err := json.Unmarshal(b, &data); err != nil {
+		return err
+	}
+	parsedSlice := make(ParameterInterfaceSlice, len(data))
+	for index, value := range data {
+		var dst ParameterInterface
+
+		// Unmarshal each element based on its type
+		if err := unmarshalValue(value, &dst); err != nil {
+			return err
+		}
+
+		parsedSlice[index] = dst
+	}
+
+	*p = parsedSlice
+	return nil
+}
+
+// unmarshalValue unmarshals the JSON value into the appropriate interface type.
+func unmarshalValue(value json.RawMessage, dst *ParameterInterface) error {
+	var obj struct {
+		Type ParameterType `json:"type"`
+	}
+
+	if err := json.Unmarshal(value, &obj); err != nil {
+		return err
+	}
+
+	switch obj.Type {
+	case ParameterTypeText:
+		var parameter Parameter
+		if err := json.Unmarshal(value, &parameter); err != nil {
+			return err
+		}
+		*dst = &parameter
+	case ParameterTypeImage:
+		var imageParameter ImageParameter
+		if err := json.Unmarshal(value, &imageParameter); err != nil {
+			return err
+		}
+		*dst = &imageParameter
+	case ParameterTypeButtonPayload:
+		var buttonPayloadParameter ButtonPayloadParameter
+		if err := json.Unmarshal(value, &buttonPayloadParameter); err != nil {
+			return err
+		}
+		*dst = &buttonPayloadParameter
+	default:
+		return errors.New("unknown type: unmarshal parameter interface slice")
+	}
+
+	return nil
+}
 
 func (p *Parameter) Build(text string) {
 	p.Type = ParameterTypeText
@@ -133,6 +197,15 @@ func New(templateName string, langCode LanguageCode) *Template {
 		},
 	}
 
+}
+
+func NewFromByte(b []byte) (Template, error) {
+	var tmpl Template
+	if er := json.Unmarshal(b, &tmpl); er != nil {
+		return tmpl, er
+	}
+
+	return tmpl, nil
 }
 
 // CleanText removes all double spaces, new lines and tabs from a string
