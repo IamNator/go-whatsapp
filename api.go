@@ -63,7 +63,7 @@ func New(phoneNumberID, appAccessToken string, opts ...Opt) *Client {
 		phoneNumberID: phoneNumberID,
 		accessToken:   appAccessToken,
 		baseURL:       baseURL,
-		apiVersion:    V16,
+		apiVersion:    V15,
 		apiCaller:     &apiCaller{}, // default
 	}
 
@@ -127,7 +127,9 @@ func (m *Client) Send(ctx context.Context, msg APIRequest) (*APIResponse, error)
 
 	url := m.baseURL + "/" + m.apiVersion.String() + "/" + m.phoneNumberID + "/messages"
 	headers := map[string]string{
-		"Authorization": "Bearer " + m.accessToken,
+		"Authorization": "Bearer " + m.accessToken, // set the authorization header
+		"Content-Type":  "application/json",        // set the content type header
+		"Accept":        "application/json",        // set the accept header
 	}
 
 	//convert to bytes
