@@ -98,3 +98,71 @@ func TestCleanText(t *testing.T) {
 		}
 	}
 }
+
+func TestNewFromByte(t *testing.T) {
+
+	tt := []struct {
+		ByteString string
+		Expected   template.Template
+	}{
+		{
+			ByteString: `{"name":"signup_otp_1","language":{"code":"en_US"},"components":[{"type":"header","parameters":[{"type":"text","text":"8967"}]},{"type":"body","parameters":[{"type":"text","text":"Ire"},{"type":"text","text":"8967"},{"type":"text","text":"15"}]}]}`,
+			Expected: template.Template{
+				Name:     "signup_otp_1",
+				Language: &template.Language{Code: "en_US"},
+				Components: []template.Component{
+					{
+						Type: template.ComponentTypeHeader,
+						Parameters: []template.ParameterInterface{
+							&template.Parameter{
+								Type: template.ParameterTypeText,
+								Text: "8967",
+							}},
+					},
+					{
+						Type: template.ComponentTypeBody,
+						Parameters: []template.ParameterInterface{
+							&template.Parameter{
+								Type: template.ParameterTypeText,
+								Text: "Ire",
+							},
+							&template.Parameter{
+								Type: template.ParameterTypeText,
+								Text: "8967",
+							},
+							&template.Parameter{
+								Type: template.ParameterTypeText,
+								Text: "15",
+							},
+						},
+					},
+				},
+				// {
+				// 	ByteString: `{"name":"signup_otp_1","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"type":"text","text":"Ife"},{"type":"text","text":"8967"},{"type":"text","text":"15"}]}]}`,
+				// },
+			},
+		}}
+
+	for _, tc := range tt {
+		obj, err := template.NewFromByte([]byte(tc.ByteString))
+		if err != nil {
+			t.Errorf("error: %v", err)
+			continue
+		}
+
+		a, err := obj.String()
+		if err != nil {
+			t.Errorf("error: %v", err)
+			continue
+		}
+		b, err := tc.Expected.String()
+		if err != nil {
+			t.Errorf("error: %v", err)
+			continue
+		}
+
+		if a != b {
+			t.Errorf("\nexpected: %+v, \ngot: %+v", a, b)
+		}
+	}
+}
