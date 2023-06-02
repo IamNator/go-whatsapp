@@ -27,11 +27,10 @@ import (
 
 func main() {
 
-	// create a new client
-	client := whatsapp.New("phoneNumberID", "appAccessToken", whatsapp.WithApiVersion(whatsapp.V15))
 
 	//build the template
-	tmpl := template.New("templateName", template.EN_US).AddHeader("header").
+	tmpl := template.New("templateName", template.EN_US).
+		AddHeader("header").
 		AddBody("body").
 		AddBody("body").
 		AddBody("body").
@@ -39,6 +38,8 @@ func main() {
 
 	recipient := "2349045057268"
 
+	// create a new client
+	client := whatsapp.New("phoneNumberID", "appAccessToken", whatsapp.WithApiVersion(whatsapp.V15))
 	// send the request
 	response, er := client.SendTemplate(context.Background(), recipient, tmpl)
 	if er != nil {
@@ -48,8 +49,6 @@ func main() {
 
 	fmt.Println("Response: ", response)
 }
-
-
 
 ````
 
@@ -90,3 +89,73 @@ func main() {
 
 
 ```
+
+### Template Builder [example]
+
+Whatsapp cloud api allows businesses to send messages to their customers using pre-defined templates, 
+in order to use the template, one would have to send the request in a particular data structure.
+
+<small> The whatsapp/template package in this library simplify's the process of building/contructing that request payload.</small>
+
+<small> Below is a step by step description of the example above.</small>
+
+
+1. <b>Create a new template</b> using the `template.New()` function, providing a name and language for the template.
+```go
+tmpl := template.New("templateName", template.EN_US)
+```
+
+2. <b>Add a header component</b> to the template using the `AddHeader()` method, specifying the header text as an argument.
+```go
+tmpl = tmpl.AddHeader("Daniel")
+```
+
+3. <b>Add body components</b>  to the template using the `AddBody()` method, providing the body texts as arguments.
+```go
+tmpl = tmpl.AddBody("Daniel")
+tmpl = tmpl.AddBody("4523")
+tmpl = tmpl.AddBody("30")
+```
+
+4. <b>Finalize the template construction</b> by calling the `Done()` method. It returns the constructed data structure.
+```go
+constructedTemplate := tmpl.Done()
+```
+   
+   
+## Data Structure.  
+
+The resulting data structure:
+
+```json
+[
+    {
+        "type": "header",
+        "parameters": [
+            {
+                "type": "text",
+                "text": "Daniel"
+            }
+        ]
+    },
+    {
+        "type": "body",
+        "parameters": [
+            {
+                "type": "text",
+                "text": "Daniel"
+            },
+            {
+                "type": "text",
+                "text": "4523"
+            },
+            {
+                "type": "text",
+                "text": "30"
+            }
+        ]
+    }
+]
+```
+
+
