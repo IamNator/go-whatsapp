@@ -248,6 +248,8 @@ const (
 	StatusDelivered StatusValue = "delivered"
 	StatusRead      StatusValue = "read"
 	StatusFailed    StatusValue = "failed"
+	StatusDeleted   StatusValue = "deleted"
+	StatusWarning   StatusValue = "warning"
 )
 
 // Status represents message delivery status updates
@@ -275,7 +277,34 @@ type Origin struct {
 
 // Pricing represents message pricing information
 type Pricing struct {
-	Billable     bool   `json:"billable"`      // Whether message is billable
-	PricingModel string `json:"pricing_model"` // Usually "CBP"
-	Category     string `json:"category"`      // Message category
+	Billable     bool         `json:"billable"`      // Whether message is billable (to be deprecated in future release [see "type": "free_customer_service","category": "utility"])
+	PricingModel PricingModel `json:"pricing_model"` // Usually "CBP"
+	Category     string       `json:"category"`      // Message category
+	Type         PricingType  `json:"type"`          // new property (v22 and above)
 }
+
+type PricingModel string
+
+type PricingType string
+
+type PricingCategory string
+
+const (
+	PricingModelCBP PricingModel = "CBP" //conversation-based pricing
+	PricingModelPMP PricingModel = "PMP" //per-message pricing (new `PMP` value)
+)
+
+const (
+	PricingTypeRegular             PricingType = "regular"
+	PricingTypeFreeCustomerService PricingType = "free_customer_service"
+	PricingTypeFreeEntryPoint      PricingType = "free_entry_point"
+)
+
+const (
+	PricingCategoryAuthenticationInternational PricingCategory = "authentication-international"
+	PricingCategoryAuthentication              PricingCategory = "authentication"
+	PricingCategoryMarketing                   PricingCategory = "marketing"
+	PricingCategoryUtility                     PricingCategory = "utility"
+	PricingCategoryService                     PricingCategory = "service"
+	PricingCategoryReferralConversion          PricingCategory = "referral_conversion"
+)
