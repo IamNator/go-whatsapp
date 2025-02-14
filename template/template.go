@@ -59,13 +59,20 @@ type (
 		Code string `json:"code"` // e.g en_US, en_GB
 	}
 
-	TemplateCategory string // docs: https://developers.facebook.com/docs/whatsapp/updates-to-pricing/new-template-guidelines
+	/*
+		TemplateCategoryMarketing      TemplateCategory = "MARKETING"
+		TemplateCategoryAuthentication TemplateCategory = "AUTHENTICATION"
+		TemplateCategoryUtility        TemplateCategory = "UTILITY"
+
+		docs: https://developers.facebook.com/docs/whatsapp/updates-to-pricing/new-template-guidelines
+	*/
+	TemplateCategory string
 
 	// Template ...
 	Template struct {
 		Name       string           `json:"name"` // The name of the whatsapp cloup api messaging template e.g signup_otp
 		Language   *Language        `json:"language"`
-		Category   TemplateCategory `json:"category,omitempty"` // e.g account_update, payment_update, issue_resolution etc
+		Category   TemplateCategory `json:"category,omitempty"` // e.g TemplateCategoryMarketing, TemplateCategoryAuthentication, TemplateCategoryUtility
 		Components []Component      `json:"components"`
 	}
 )
