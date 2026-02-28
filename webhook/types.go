@@ -83,17 +83,17 @@ type Media struct {
 type Location struct {
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
-	Name      string  `json:"name,omitempty"`    // Location name if available
-	Address   string  `json:"address,omitempty"` // Address if available
+	Name      *string `json:"name,omitempty"`    // Location name if available
+	Address   *string `json:"address,omitempty"` // Address if available
 }
 
 // ContactMessage represents a shared contact message
 type ContactMessage struct {
 	Addresses []Address `json:"addresses,omitempty"`
-	Birthday  string    `json:"birthday,omitempty"`
+	Birthday  *string   `json:"birthday,omitempty"`
 	Emails    []Email   `json:"emails,omitempty"`
 	Name      Name      `json:"name"`
-	Org       Org       `json:"org,omitempty"`
+	Org       *Org      `json:"org,omitempty"`
 	Phones    []Phone   `json:"phones,omitempty"`
 	URLs      []URL     `json:"urls,omitempty"`
 }
@@ -117,12 +117,12 @@ type Email struct {
 
 // Name represents contact name details
 type Name struct {
-	FormattedName string `json:"formatted_name"`
-	FirstName     string `json:"first_name"`
-	LastName      string `json:"last_name"`
-	MiddleName    string `json:"middle_name,omitempty"`
-	Suffix        string `json:"suffix,omitempty"`
-	Prefix        string `json:"prefix,omitempty"`
+	FormattedName string  `json:"formatted_name"`
+	FirstName     string  `json:"first_name"`
+	LastName      string  `json:"last_name"`
+	MiddleName    *string `json:"middle_name,omitempty"`
+	Suffix        *string `json:"suffix,omitempty"`
+	Prefix        *string `json:"prefix,omitempty"`
 }
 
 // Org represents business/organization information
@@ -134,9 +134,9 @@ type Org struct {
 
 // Phone represents contact phone number information
 type Phone struct {
-	Phone string `json:"phone"`
-	WaID  string `json:"wa_id,omitempty"` // WhatsApp ID if available
-	Type  string `json:"type"`            // HOME or WORK
+	Phone string  `json:"phone"`
+	WaID  *string `json:"wa_id,omitempty"` // WhatsApp ID if available
+	Type  string  `json:"type"`            // HOME or WORK
 }
 
 // URL represents contact URL information
@@ -192,23 +192,23 @@ type ListReply struct {
 
 // Referral represents Click to WhatsApp ad referral data
 type Referral struct {
-	SourceURL    string `json:"source_url"`
-	SourceID     string `json:"source_id"`
-	SourceType   string `json:"source_type"` // ad or post
-	Headline     string `json:"headline"`    // Ad title
-	Body         string `json:"body"`        // Ad description
-	MediaType    string `json:"media_type"`  // image or video
-	ImageURL     string `json:"image_url,omitempty"`
-	VideoURL     string `json:"video_url,omitempty"`
-	ThumbnailURL string `json:"thumbnail_url,omitempty"`
-	CtwaClid     string `json:"ctwa_clid"`
+	SourceURL    string  `json:"source_url"`
+	SourceID     string  `json:"source_id"`
+	SourceType   string  `json:"source_type"` // ad or post
+	Headline     string  `json:"headline"`    // Ad title
+	Body         string  `json:"body"`        // Ad description
+	MediaType    string  `json:"media_type"`  // image or video
+	ImageURL     *string `json:"image_url,omitempty"`
+	VideoURL     *string `json:"video_url,omitempty"`
+	ThumbnailURL *string `json:"thumbnail_url,omitempty"`
+	CtwaClid     string  `json:"ctwa_clid"`
 }
 
 // Order represents a product order message
 type Order struct {
 	CatalogID    string        `json:"catalog_id"`
 	ProductItems []ProductItem `json:"product_items"`
-	Text         string        `json:"text,omitempty"`
+	Text         *string       `json:"text,omitempty"`
 }
 
 // ProductItem represents an ordered product
@@ -221,19 +221,19 @@ type ProductItem struct {
 
 // System represents system notifications
 type System struct {
-	Body    string `json:"body"`                // System message content
-	NewWaID string `json:"new_wa_id,omitempty"` // New phone number for user
-	Type    string `json:"type"`                // e.g., user_changed_number
+	Body    string  `json:"body"`                // System message content
+	NewWaID *string `json:"new_wa_id,omitempty"` // New phone number for user
+	Type    string  `json:"type"`                // e.g., user_changed_number
 }
 
 // Error represents error information
 type Error struct {
-	Code      int       `json:"code"`
-	Title     string    `json:"title"`
-	Message   string    `json:"message,omitempty"`
-	ErrorData ErrorData `json:"error_data,omitempty"`
-	Details   string    `json:"details,omitempty"`
-	Href      string    `json:"href,omitempty"` // e.g https://developers.facebook.com/docs/whatsapp/cloud-api/support/error-codes/
+	Code      int        `json:"code"`
+	Title     string     `json:"title"`
+	Message   *string    `json:"message,omitempty"`
+	ErrorData *ErrorData `json:"error_data,omitempty"`
+	Details   *string    `json:"details,omitempty"`
+	Href      *string    `json:"href,omitempty"` // e.g https://developers.facebook.com/docs/whatsapp/cloud-api/support/error-codes/
 }
 
 // ErrorData represents additional error data
@@ -265,9 +265,9 @@ type Status struct {
 
 // Conversation represents conversation information
 type Conversation struct {
-	ID                  string `json:"id"`
-	ExpirationTimestamp string `json:"expiration_timestamp,omitempty"`
-	Origin              Origin `json:"origin"`
+	ID                  string  `json:"id"`
+	ExpirationTimestamp *string `json:"expiration_timestamp,omitempty"`
+	Origin              Origin  `json:"origin"`
 }
 
 // Origin represents conversation origin information
