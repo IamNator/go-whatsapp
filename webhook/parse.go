@@ -84,15 +84,3 @@ func ParseBytes(data []byte) (*WebhookRequest, error) {
 
 	return &webhook, nil
 }
-
-func ParseAny(input interface{}) (*WebhookRequest, error) {
-	// Handle different input types
-	switch v := input.(type) {
-	case io.Reader:
-		return Parse(v)
-	case []byte:
-		return ParseBytes(v)
-	default:
-		return nil, &json.UnmarshalTypeError{} // Return an error for unsupported types
-	}
-}
