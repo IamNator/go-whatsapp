@@ -70,10 +70,10 @@ type (
 
 	// Template ...
 	Template struct {
-		Name       string           `json:"name"` // The name of the whatsapp cloup api messaging template e.g signup_otp
-		Language   *Language        `json:"language"`
-		Category   TemplateCategory `json:"category,omitempty"` // e.g TemplateCategoryMarketing, TemplateCategoryAuthentication, TemplateCategoryUtility
-		Components []Component      `json:"components"`
+		Name       string            `json:"name"` // The name of the whatsapp cloup api messaging template e.g signup_otp
+		Language   *Language         `json:"language"`
+		Category   *TemplateCategory `json:"category,omitempty"` // e.g TemplateCategoryMarketing, TemplateCategoryAuthentication, TemplateCategoryUtility
+		Components []Component       `json:"components"`
 	}
 )
 
@@ -237,7 +237,9 @@ func CleanText(s string) string {
 }
 
 func (m *Template) SetCategory(category TemplateCategory) *Template {
-	m.Category = category
+	if category != "" {
+		m.Category = &category
+	}
 	return m
 }
 
